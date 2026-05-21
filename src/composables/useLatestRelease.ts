@@ -23,11 +23,8 @@ const release = ref<Release | null>(null)
 const loading = ref(false)
 const error = ref(false)
 
-export function useLatestRelease() {
-  if (release.value || loading.value) {
-    return { release: readonly(release), loading: readonly(loading), error: readonly(error) }
-  }
-
+function fetchRelease() {
+  if (loading.value) return
   loading.value = true
 
   fetch('https://api.github.com/repos/danielvm-git/big-dock-locker/releases/latest')
@@ -51,6 +48,7 @@ export function useLatestRelease() {
           total: siliconCount + intelCount,
         },
       }
+      error.value = false
     })
     .catch(() => {
       error.value = true
@@ -58,6 +56,38 @@ export function useLatestRelease() {
     .finally(() => {
       loading.value = false
     })
+}
 
-  return { release: readonly(release), loading: readonly(loading), error: readonly(error) }
+function incrementDownload(arch: 'apple-silicon' | 'intel') {
+  if (!release.value) return
+  release.value = {
+    ...release.value,
+    downloads: {
+      silicon: release.value.downloads.silicon + (arch === 'apple-silicon' ? 1 : 0),
+      intel: release.value.downloads.intel + (arch === 'intel' ? 1 : 0),
+      total: release.value.downloads.total + 1,
+    },
+  }
+}
+
+// Refetch when user returns to tab (GitHub may have updated by then)
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && release.value) {
+      fetchRelease()
+    }
+  })
+}
+
+export function useLatestRelease() {
+  if (!release.value && !loading.value) {
+    fetchRelease()
+  }
+
+  return {
+    release: readonly(release),
+    loading: readonly(loading),
+    error: readonly(error),
+    incrementDownload,
+  }
 }

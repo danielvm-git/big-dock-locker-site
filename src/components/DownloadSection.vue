@@ -3,9 +3,10 @@ import * as Sentry from '@sentry/vue'
 import { useLatestRelease } from '../composables/useLatestRelease'
 
 const FALLBACK = 'https://github.com/danielvm-git/big-dock-locker/releases/latest'
-const { release, loading, error } = useLatestRelease()
+const { release, loading, error, incrementDownload } = useLatestRelease()
 
 function trackDownload(arch: 'apple-silicon' | 'intel') {
+  incrementDownload(arch)
   Sentry.addBreadcrumb({
     category: 'download',
     message: `download_clicked`,
