@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.0.0...v1.0.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* use dashboard screenshot for social media preview image ([57733ec](https://github.com/danielvm-git/big-dock-locker-site/commit/57733ecf3b6727471feaa8870f414994b8dc7c9a))
+
 # 1.0.0 (2026-05-21)
 
 
