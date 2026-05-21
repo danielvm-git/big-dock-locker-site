@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.2.0...v1.3.0) (2026-05-21)
+
+
+### Features
+
+* show GitHub release download counts on hero and download section ([c2cbe74](https://github.com/danielvm-git/big-dock-locker-site/commit/c2cbe74c98d68c802c3ccc85079da3f72cc3366b))
+
 # [1.2.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.1.0...v1.2.0) (2026-05-21)
 
 
