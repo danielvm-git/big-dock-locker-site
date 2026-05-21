@@ -51,6 +51,10 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
             {{ loading ? 'Loading…' : 'Intel Mac' }}
           </a>
         </div>
+        <p v-if="release?.downloads.total" class="hero-downloads">
+          ↓ {{ release.downloads.total.toLocaleString() }} downloads
+        </p>
+
         <p v-if="error" class="hero-error">
           Could not fetch release info.
           <a :href="FALLBACK" target="_blank" rel="noopener noreferrer">Go to releases →</a>
@@ -120,6 +124,13 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
   @media (max-width: 900px) {
     justify-content: center;
   }
+}
+
+.hero-downloads {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
 }
 
 .hero-error {

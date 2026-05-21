@@ -59,6 +59,20 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
         </a>
       </div>
 
+      <div v-if="release?.downloads.total" class="download-stats">
+        <span class="stat-item">
+          <strong>{{ release.downloads.total.toLocaleString() }}</strong> total downloads
+        </span>
+        <span class="stat-sep">·</span>
+        <span class="stat-item">
+          <strong>{{ release.downloads.silicon.toLocaleString() }}</strong> Apple Silicon
+        </span>
+        <span class="stat-sep">·</span>
+        <span class="stat-item">
+          <strong>{{ release.downloads.intel.toLocaleString() }}</strong> Intel
+        </span>
+      </div>
+
       <p v-if="error" class="download-error">
         Could not load release info.
         <a :href="FALLBACK" target="_blank" rel="noopener noreferrer">
@@ -125,6 +139,25 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
 .download-btn {
   font-size: 17px;
   padding: 16px 32px;
+}
+
+.download-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text);
+  flex-wrap: wrap;
+  justify-content: center;
+
+  strong {
+    color: var(--text-h);
+  }
+}
+
+.stat-sep {
+  color: var(--border);
 }
 
 .download-error {

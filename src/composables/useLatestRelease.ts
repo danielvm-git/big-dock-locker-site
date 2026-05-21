@@ -1,9 +1,20 @@
 import { ref, readonly } from 'vue'
 
+interface Asset {
+  name: string
+  browser_download_url: string
+  download_count: number
+}
+
 interface Release {
   tag: string
   silicon: string
   intel: string
+  downloads: {
+    silicon: number
+    intel: number
+    total: number
+  }
 }
 
 const FALLBACK = 'https://github.com/danielvm-git/big-dock-locker/releases/latest'
@@ -22,13 +33,24 @@ export function useLatestRelease() {
   fetch('https://api.github.com/repos/danielvm-git/big-dock-locker/releases/latest')
     .then((r) => r.json())
     .then((data) => {
-      const silicon = data.assets?.find((a: { name: string }) =>
+      const siliconAsset: Asset | undefined = data.assets?.find((a: Asset) =>
         a.name.includes('apple-silicon'),
-      )?.browser_download_url ?? FALLBACK
-      const intel = data.assets?.find((a: { name: string }) =>
+      )
+      const intelAsset: Asset | undefined = data.assets?.find((a: Asset) =>
         a.name.includes('intel'),
-      )?.browser_download_url ?? FALLBACK
-      release.value = { tag: data.tag_name ?? '', silicon, intel }
+      )
+      const siliconCount = siliconAsset?.download_count ?? 0
+      const intelCount = intelAsset?.download_count ?? 0
+      release.value = {
+        tag: data.tag_name ?? '',
+        silicon: siliconAsset?.browser_download_url ?? FALLBACK,
+        intel: intelAsset?.browser_download_url ?? FALLBACK,
+        downloads: {
+          silicon: siliconCount,
+          intel: intelCount,
+          total: siliconCount + intelCount,
+        },
+      }
     })
     .catch(() => {
       error.value = true
