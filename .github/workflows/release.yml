@@ -30,24 +30,3 @@ jobs:
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Notify Sentry of release
-        run: |
-          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$VERSION" ]; then
-            echo "No tag found — skipping Sentry release steps"
-            exit 0
-          fi
-          echo "Registering Sentry release: $VERSION"
-          npx @sentry/cli releases new "$VERSION" --finalize
-          npx @sentry/cli releases set-commits "$VERSION" --auto --ignore-missing
-          npx @sentry/cli releases files "$VERSION" upload-sourcemaps ./dist \
-            --url-prefix "~/" \
-            --rewrite
-          npx @sentry/cli releases deploys new \
-            --release "$VERSION" \
-            -e production
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: bigbuilds
-          SENTRY_PROJECT: javascript-vue
