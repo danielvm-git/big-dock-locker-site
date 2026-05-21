@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { ref } from 'vue'
 import DownloadSection from '../../src/components/DownloadSection.vue'
 import { useLatestRelease } from '../../src/composables/useLatestRelease'
+import { RELEASE_FIXTURE, makeMockReturn } from './fixtures'
 
 vi.mock('../../src/composables/useLatestRelease')
 vi.mock('@sentry/vue', () => ({
@@ -9,20 +9,10 @@ vi.mock('@sentry/vue', () => ({
   captureMessage: vi.fn(),
 }))
 
-const RELEASE = {
-  tag: 'v1.3.0',
-  silicon: 'https://example.com/v1.3.0/apple-silicon.dmg',
-  intel: 'https://example.com/v1.3.0/intel.dmg',
-  downloads: { silicon: 80, intel: 20, total: 100 },
-}
+const RELEASE = RELEASE_FIXTURE
 
-function mockRelease(opts: { loading?: boolean; error?: boolean; release?: typeof RELEASE | null } = {}) {
-  vi.mocked(useLatestRelease).mockReturnValue({
-    release: ref(opts.release !== undefined ? opts.release : RELEASE) as any,
-    loading: ref(opts.loading ?? false),
-    error: ref(opts.error ?? false),
-    incrementDownload: vi.fn(),
-  })
+function mockRelease(opts: Parameters<typeof makeMockReturn>[0] = {}) {
+  vi.mocked(useLatestRelease).mockReturnValue(makeMockReturn(opts))
 }
 
 describe('DownloadSection', () => {

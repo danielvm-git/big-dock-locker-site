@@ -29,15 +29,16 @@ describe('useLatestRelease', () => {
   beforeEach(() => {
     capturedVisibilityListeners = []
     const origAddEventListener = document.addEventListener.bind(document)
-    vi.spyOn(document, 'addEventListener').mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (type: string, listener: any, options?: any) => {
-        if (type === 'visibilitychange' && listener) {
-          capturedVisibilityListeners.push(listener)
-        }
-        origAddEventListener(type, listener, options)
-      },
-    )
+    vi.spyOn(document, 'addEventListener').mockImplementation(((
+      type: string,
+      listener: EventListenerOrEventListenerObject | null,
+      options?: boolean | AddEventListenerOptions,
+    ) => {
+      if (type === 'visibilitychange' && listener) {
+        capturedVisibilityListeners.push(listener as EventListener)
+      }
+      origAddEventListener(type, listener!, options)
+    }) as typeof document.addEventListener)
     vi.resetModules()
     fetchMock = createMockFetch()
     vi.stubGlobal('fetch', fetchMock)
