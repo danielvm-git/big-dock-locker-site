@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.3.0...v1.4.0) (2026-05-21)
+
+
+### Features
+
+* optimistic download counter increment and refetch on tab focus ([578f745](https://github.com/danielvm-git/big-dock-locker-site/commit/578f7450b9947a764e33c3a8e394d7cdd4fb6164))
+
 # [1.3.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.2.0...v1.3.0) (2026-05-21)
 
 
