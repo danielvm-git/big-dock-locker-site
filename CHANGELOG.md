@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.0.1...v1.0.2) (2026-05-21)
+
+
+### Bug Fixes
+
+* correct Netlify domain in OG meta tags ([d167192](https://github.com/danielvm-git/big-dock-locker-site/commit/d167192b023ead8178e4065ed3869f7e0a90cfef))
+
 ## [1.0.1](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.0.0...v1.0.1) (2026-05-21)
 
 
