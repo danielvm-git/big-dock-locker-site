@@ -1,8 +1,22 @@
 <script setup lang="ts">
+import * as Sentry from '@sentry/vue'
 import { useLatestRelease } from '../composables/useLatestRelease'
 
 const FALLBACK = 'https://github.com/danielvm-git/big-dock-locker/releases/latest'
 const { release, loading, error } = useLatestRelease()
+
+function trackDownload(arch: 'apple-silicon' | 'intel') {
+  Sentry.addBreadcrumb({
+    category: 'download',
+    message: `download_clicked`,
+    level: 'info',
+    data: { arch, version: release.value?.tag ?? 'unknown', source: 'hero' },
+  })
+  Sentry.captureMessage(`download_clicked:${arch}`, {
+    level: 'info',
+    tags: { arch, version: release.value?.tag ?? 'unknown', source: 'hero' },
+  })
+}
 </script>
 
 <template>
@@ -20,6 +34,7 @@ const { release, loading, error } = useLatestRelease()
             :href="error ? FALLBACK : (release?.silicon ?? FALLBACK)"
             :aria-disabled="loading ? 'true' : undefined"
             class="btn-primary"
+            @click="trackDownload('apple-silicon')"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
@@ -31,6 +46,7 @@ const { release, loading, error } = useLatestRelease()
             :href="error ? FALLBACK : (release?.intel ?? FALLBACK)"
             :aria-disabled="loading ? 'true' : undefined"
             class="btn-secondary"
+            @click="trackDownload('intel')"
           >
             {{ loading ? 'Loading…' : 'Intel Mac' }}
           </a>
