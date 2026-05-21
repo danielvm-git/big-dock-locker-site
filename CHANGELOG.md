@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.1.0...v1.2.0) (2026-05-21)
+
+
+### Features
+
+* add Sentry release health — release tag and environment injected at build time ([8852610](https://github.com/danielvm-git/big-dock-locker-site/commit/8852610a989cfb353574dfe8e173975bc4541899))
+* add Sentry release pipeline — source maps, commit association, deploy notification ([6c50a7f](https://github.com/danielvm-git/big-dock-locker-site/commit/6c50a7f570faea9016a302fe71b2b4a279ee85a8))
+
 # [1.1.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.0.2...v1.1.0) (2026-05-21)
 
 
