@@ -72,12 +72,12 @@
 **Context:** HeroSection, DownloadSection, and TheFooter all need the same live release data. State is declared at **module scope** so all callers share a single reactive object and only one `fetch` ever fires regardless of how many components mount.
 
 **API:** `GET https://api.github.com/repos/danielvm-git/big-dock-locker/releases/latest`  
-**Response fields used:** `tag_name`, `assets[].name`, `assets[].browser_download_url`  
+**Response fields used:** `tag_name`, `assets[].name`, `assets[].browser_download_url`, `assets[].download_count`  
 **Fallback URL:** `https://github.com/danielvm-git/big-dock-locker/releases/latest`
 
 ## Steps
 
-10. Create `src/composables/useLatestRelease.ts` — module-scope `const release = ref<Release | null>(null)`, `const loading = ref(false)`, `const error = ref(false)`; exported `useLatestRelease()` guards with `if (release.value || loading.value) return { release, loading, error }`; on success populates `release.value`; on catch sets `error.value = true`; returns `{ release, loading, error }` as readonly → verify: `npm run build 2>&1 | grep -c error || true`
+10. Create `src/composables/useLatestRelease.ts` — module-scope `const release = ref<Release | null>(null)`, `const loading = ref(false)`, `const error = ref(false)`; exported `useLatestRelease()` guards with singleton check; on success populates `release.value` with tag, silicon URL, intel URL, and downloads breakdown; on catch sets `error.value = true`; exports `incrementDownload(arch)` for optimistic UI; `visibilitychange` listener triggers refetch when tab regains focus; returns `{ release, loading, error, incrementDownload }` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
@@ -87,73 +87,57 @@
 
 ## Steps
 
-11. Create `src/components/HeroSection.vue` — `onMounted` calls composable, headline "Pin Your Dock. Keep It There.", sub-copy, two `<a>` download buttons bound to `release.value?.silicon / .intel` with fallback href to releases page, `aria-disabled` while loading, `<img src="/dashboard.png" alt="Big DockLocker dashboard" style="max-height:480px;width:auto">`, scoped responsive CSS → verify: `npm run build 2>&1 | grep -c error || true`
+11. Create `src/components/HeroSection.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
 ### Story 1.4: FeaturesSection component
 
-**Context:** Five feature cards in a CSS grid (3 cols → 2 → 1). Icons are Unicode glyphs — no external icon library.
-
-Features: Persistent Dock Pinning · Gesture Blocking · Menu Bar Integration · Native SwiftUI Dashboard · Launch at Login.
-
 ## Steps
 
-12. Create `src/components/FeaturesSection.vue` — `features` typed as `{ icon: string; title: string; desc: string }[]`, CSS grid with responsive breakpoints, scoped CSS → verify: `npm run build 2>&1 | grep -c error || true`
+12. Create `src/components/FeaturesSection.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
 ### Story 1.5: HowItWorksSection component
 
-**Context:** Three-step numbered flow (Download → Grant Permissions → Start Engine). Horizontal stepper on desktop, vertical stack on mobile (≤768px).
-
 ## Steps
 
-13. Create `src/components/HowItWorksSection.vue` — `steps` typed as `{ num: number; title: string; body: string }[]`, horizontal flex with connector lines on desktop collapsing to vertical on mobile, scoped CSS → verify: `npm run build 2>&1 | grep -c error || true`
+13. Create `src/components/HowItWorksSection.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
 ### Story 1.6: InstallSection component
 
-**Context:** Gatekeeper bypass guide — required because the app is distributed outside the Mac App Store. Three subsections: Security approval, Accessibility permission, Terminal power-user shortcut. Terminal command rendered in `<code>` with a clipboard copy button (`navigator.clipboard.writeText`).
-
-Terminal command: `xattr -dr com.apple.quarantine /Applications/BigDockLocker.app`
-
 ## Steps
 
-14. Create `src/components/InstallSection.vue` — three numbered subsections, `<code>` block for terminal command, copy-to-clipboard button using `navigator.clipboard.writeText`, scoped CSS → verify: `npm run build 2>&1 | grep -c error || true`
+14. Create `src/components/InstallSection.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
 ### Story 1.7: DownloadSection component
 
-**Context:** Primary below-the-fold conversion section. `id="download"` for the navbar anchor. Live version badge and macOS 13+ note. Calls `useLatestRelease()` — module-scope singleton, no second request. Skeleton opacity while loading.
-
 ## Steps
 
-15. Create `src/components/DownloadSection.vue` — `id="download"`, calls `useLatestRelease()`, `release.value?.tag ?? '…'` as version badge, macOS 13+ note, two large download `<a>` buttons with Silicon/Intel labels and fallback href, `opacity: 0.5` skeleton while loading, scoped CSS → verify: `npm run build 2>&1 | grep -c error || true`
+15. Create `src/components/DownloadSection.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
 ### Story 1.8: TheFooter component
 
-**Context:** Minimal footer. GitHub link reuses `#github-icon` from the sprite. Version tag from the composable singleton (no extra fetch). Copyright.
-
 ## Steps
 
-16. Create `src/components/TheFooter.vue` — GitHub `<a>` with `<use href="/icons.svg#github-icon">`, "MIT License", `release.value?.tag` (empty while loading), "© 2026 Daniel VM", scoped CSS → verify: `npm run build 2>&1 | grep -c error || true`
+16. Create `src/components/TheFooter.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
 ---
 
 ### Story 1.9: Wire App.vue and remove scaffold
 
-**Context:** Swap HelloWorld for the seven new components. Delete HelloWorld.vue and the three unused asset files to satisfy `noUnusedLocals: true`.
-
 ## Steps
 
-17. Rewrite `src/App.vue` — import and render in order: TheNavbar, HeroSection, FeaturesSection, HowItWorksSection, InstallSection, DownloadSection, TheFooter; no other imports → verify: `npm run build 2>&1 | grep -c error || true`
+17. Rewrite `src/App.vue` → verify: `npm run build 2>&1 | grep -c error || true`
 
-18. Delete `src/components/HelloWorld.vue`, `src/assets/hero.png`, `src/assets/vite.svg`, `src/assets/vue.svg` → verify: `npm run build 2>&1 | tail -3`
+18. Delete scaffold files → verify: `npm run build 2>&1 | tail -3`
 
 ---
 
@@ -161,26 +145,153 @@ Terminal command: `xattr -dr com.apple.quarantine /Applications/BigDockLocker.ap
 
 ## Steps
 
-19. Run full build, confirm zero TypeScript errors and zero Vite warnings → verify: `npm run build 2>&1 | tee /tmp/build.log; grep -iE "error|warn" /tmp/build.log || echo "CLEAN BUILD"`
+19. Run full build → verify: `npm run build 2>&1 | tee /tmp/build.log; grep -iE "error|warn" /tmp/build.log || echo "CLEAN BUILD"`
 
-20. Start preview server — visually confirm all seven sections render, navbar is sticky, download buttons are present → verify: `npm run preview -- --port 4173 &` then open `http://localhost:4173` (manual visual check)
+20. Start preview server → verify: `npm run preview -- --port 4173 &` then open `http://localhost:4173`
+
+---
+
+### Story 2.0: Vitest + @vue/test-utils setup
+
+**Context:** Install and configure the unit/component test runner. Vitest is chosen for native Vite integration — no separate bundler pass. Tests live in `tests/unit/` at the project root (not inside `src/`) to avoid being caught by `tsconfig.app.json`'s `noUnusedLocals` check, which `vue-tsc -b` enforces only over `src/**`. A dedicated `vitest.config.ts` keeps test configuration separate from the production Vite config (which runs the Sentry plugin and sourcemap build).
+
+**Reason for separate vitest.config.ts:** The production `vite.config.ts` runs `sentryVitePlugin` on every build, which emits warnings without `SENTRY_AUTH_TOKEN`. Test runs must not trigger the Sentry plugin at all.
+
+## Steps
+
+21. Install `vitest`, `@vue/test-utils`, `@vitejs/plugin-vue`, `jsdom` as devDependencies → verify: `node -e "require('./node_modules/vitest/package.json')" && echo OK`
+
+22. Create `vitest.config.ts` — extends vue plugin, sets `environment: 'jsdom'`, `globals: true`, `include: ['tests/unit/**/*.test.ts']`, excludes Sentry plugin → verify: `cat vitest.config.ts | grep -q jsdom && echo OK`
+
+23. Add `"test": "vitest run"` and `"test:watch": "vitest"` scripts to `package.json` → verify: `npm run test 2>&1 | grep -q "no test files" && echo OK || npm run test`
+
+24. Create `tests/unit/` directory with a placeholder `tests/unit/.gitkeep` and confirm Vitest finds it → verify: `npm run test 2>&1 | tail -5`
+
+---
+
+### Story 2.1: Unit tests — useLatestRelease composable
+
+**Context:** The composable uses module-scope singleton refs. Each test must call `vi.resetModules()` and re-import the module dynamically to get fresh state. `fetch` is mocked with `vi.stubGlobal`. The `visibilitychange` listener is tested by dispatching a synthetic event via `document.dispatchEvent`.
+
+**Contracts that must hold:**
+- First call fetches; second call (same module instance) skips fetch
+- Silicon asset identified by `name.includes('apple-silicon')`
+- Intel asset identified by `name.includes('intel')`
+- `downloads.total === downloads.silicon + downloads.intel`
+- On network error: `error.value === true`, `release.value === null`
+- `incrementDownload('apple-silicon')` increments silicon and total by 1, intel unchanged
+- `incrementDownload('intel')` increments intel and total by 1, silicon unchanged
+
+## Steps
+
+25. Create `tests/unit/useLatestRelease.test.ts` with a `mockFetch` helper that returns a well-formed GitHub API response fixture; write test: "fetches from the correct GitHub API URL on first call" → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "fetches from" && echo OK`
+
+26. Add test: "does not fetch twice when called again with release already loaded (singleton guard)" — asserts `fetch` call count is 1 after two `useLatestRelease()` calls → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "singleton" && echo OK`
+
+27. Add test: "parses silicon and intel download URLs from assets array" — asserts `release.value.silicon` contains `apple-silicon` and `release.value.intel` contains `intel` → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "parses silicon" && echo OK`
+
+28. Add test: "extracts download_count for each arch and computes correct total" — fixture has silicon: 80, intel: 20, asserts total: 100 → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "download_count" && echo OK`
+
+29. Add test: "sets error=true and leaves release=null when fetch rejects" → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "error=true" && echo OK`
+
+30. Add test: "incrementDownload('apple-silicon') adds 1 to silicon and total, leaves intel unchanged" → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "incrementDownload" && echo OK`
+
+31. Add test: "incrementDownload('intel') adds 1 to intel and total, leaves silicon unchanged" → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "incrementDownload.*intel" && echo OK`
+
+32. Add test: "visibilitychange refetches when document becomes visible and release is already loaded" — dispatches `visibilitychange` after first fetch, asserts fetch called twice → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "visibilitychange" && echo OK`
+
+33. Run full unit suite and confirm all 8 composable tests pass → verify: `npm run test 2>&1 | grep -E "8 passed|Tests.*8"`
+
+---
+
+### Story 2.2: Component tests — HeroSection
+
+**Context:** Component tests mount the component with `@vue/test-utils` and stub `useLatestRelease` via `vi.mock`. `@sentry/vue` is also mocked to prevent real Sentry calls. Tests assert rendered HTML, not implementation details.
+
+**Reason for vi.mock on useLatestRelease:** The composable fetches on import; stubbing it keeps component tests hermetic and fast.
+
+## Steps
+
+34. Create `tests/unit/HeroSection.test.ts` — mock `useLatestRelease` to return a loaded release fixture; assert two `<a>` download buttons are rendered → verify: `npm run test -- --reporter=verbose 2>&1 | grep -q "HeroSection" && echo OK`
+
+35. Add test: "download button hrefs match release.silicon and release.intel" — asserts `href` attribute values → verify: `npm run test 2>&1 | grep -E "passed"`
+
+36. Add test: "buttons carry aria-disabled='true' while loading" — mock returns `loading: true, release: null` → verify: `npm run test 2>&1 | grep -E "passed"`
+
+37. Add test: "shows fallback link when error is true" — mock returns `error: true` → verify: `npm run test 2>&1 | grep -E "passed"`
+
+38. Add test: "shows download total when release is loaded" — asserts text contains the formatted total number → verify: `npm run test 2>&1 | grep -E "passed"`
+
+---
+
+### Story 2.3: Component tests — DownloadSection, TheNavbar, InstallSection
+
+**Context:** Remaining component tests. `navigator.clipboard` is stubbed via `vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })` before mounting InstallSection.
+
+## Steps
+
+39. Create `tests/unit/DownloadSection.test.ts` — assert version badge renders `release.tag`; assert stats show total/silicon/intel counts; assert skeleton class present while loading → verify: `npm run test 2>&1 | grep -E "passed"`
+
+40. Create `tests/unit/TheNavbar.test.ts` — assert Download CTA has `href="#download"`; assert GitHub link has correct `href` → verify: `npm run test 2>&1 | grep -E "passed"`
+
+41. Create `tests/unit/InstallSection.test.ts` — stub `navigator.clipboard.writeText`; click copy button; assert `writeText` called with the exact terminal command string → verify: `npm run test 2>&1 | grep -E "passed"`
+
+42. Run full unit suite and confirm all component tests pass alongside composable tests → verify: `npm run test 2>&1 | grep -E "passed" | tail -3`
+
+---
+
+### Story 2.4: Playwright E2E setup and smoke tests
+
+**Context:** Playwright runs against the Vite preview server (`npm run preview`). Tests verify that the full page renders correctly in a real browser (headless Chromium). The `webServer` config in `playwright.config.ts` auto-starts the preview server before the test run.
+
+**Reason for Playwright over Vitest browser mode:** Playwright provides stable cross-browser support and a mature API for anchor navigation and network mocking — the key E2E concerns for this SPA.
+
+## Steps
+
+43. Install `@playwright/test` and run `npx playwright install chromium` → verify: `npx playwright --version && echo OK`
+
+44. Create `playwright.config.ts` — `testDir: 'tests/e2e'`, `webServer: { command: 'npm run preview -- --port 4174', url: 'http://localhost:4174', reuseExistingServer: true }`, project: `chromium` only → verify: `cat playwright.config.ts | grep -q "chromium" && echo OK`
+
+45. Add `"test:e2e": "playwright test"` script to `package.json` → verify: `cat package.json | grep -q "test:e2e" && echo OK`
+
+46. Create `tests/e2e/smoke.test.ts` — test: "page title is correct" asserts `<title>` contains "Big DockLocker" → verify: `npm run build && npm run test:e2e 2>&1 | grep -q "passed"`
+
+47. Add E2E test: "all seven sections are visible" — checks `#features`, `#how-it-works`, `#install`, `#download` exist in DOM → verify: `npm run test:e2e 2>&1 | grep -q "passed"`
+
+48. Add E2E test: "navbar Download button scrolls to #download section" — clicks `.navbar-cta`, asserts `#download` is in viewport → verify: `npm run test:e2e 2>&1 | grep -q "passed"`
+
+49. Add E2E test: "download buttons have valid href attributes" — asserts both Apple Silicon and Intel `<a>` tags have `href` starting with `https://` (mocks GitHub API response via `page.route`) → verify: `npm run test:e2e 2>&1 | grep -q "passed"`
+
+50. Run full E2E suite and confirm all tests pass → verify: `npm run test:e2e 2>&1 | grep -E "passed" | tail -3`
+
+---
+
+### Story 2.5: Wire tests into CI before build
+
+**Context:** Tests must be a hard gate before the build step in `.github/workflows/release.yml`. Unit tests run against source (no build needed). E2E runs after build against the preview server. Both must be green for the release to proceed.
+
+## Steps
+
+51. Update `.github/workflows/release.yml` — insert `npm run test` step between `npm ci` and `npm run build`; add a separate `npm run test:e2e` step after `npm run build` but before `npx semantic-release`; add `npx playwright install --with-deps chromium` before the E2E step → verify: `cat .github/workflows/release.yml | grep -A2 "npm run test" | head -10`
+
+52. Commit all test files and CI changes → verify: `git status --short | grep -c "^A " && echo "files staged"`
+
+53. Run the full local pipeline in sequence to confirm end-to-end green: unit tests → build → E2E → verify: `npm run test && npm run build && npm run test:e2e && echo "PIPELINE GREEN"`
 
 ---
 
 ## Out of scope
 
-- Routing / multi-page navigation
-- Blog, Privacy, Help, or Privacy pages
-- Analytics integration
-- Contact form
-- Automated visual regression tests
-- Deployment target configuration (Netlify / Vercel / Pages — add after this plan)
+- Snapshot testing / visual regression
+- Accessibility (a11y) automated checks
+- Load / performance tests
+- Testing FeaturesSection, HowItWorksSection, TheFooter (pure static markup, no logic)
+- Cross-browser E2E beyond Chromium (add Firefox/WebKit later)
 
 ## Risks
 
-- `noUnusedLocals: true` — every `<script setup>` variable must appear in the template.
-- `useLatestRelease` race guard: if two components mount simultaneously before the first fetch resolves, `if (release.value || loading.value) return` prevents a duplicate request.
-- Dashboard screenshot is portrait (892×1058) — hero must cap `max-height: 480px`.
-- GitHub unauthenticated API rate limit: 60 req/hour per IP. All three composable callers share one request via module-scope state.
-- Error fallback: if the API fails, download buttons must still link to the GitHub releases page.
-- `GITHUB_TOKEN` is automatically provided by GitHub Actions for public repos — no manual secret needed for the release workflow.
+- **Singleton reset between unit tests:** `vi.resetModules()` must be called in `beforeEach` and the composable re-imported dynamically — if forgotten, state bleeds between tests and order-dependence breaks the suite.
+- **jsdom missing browser APIs:** `navigator.clipboard`, `document.visibilityState` may not be available — stub explicitly before each test that needs them.
+- **Preview server port conflict in E2E:** if port 4174 is in use locally, Playwright will hang — `reuseExistingServer: true` mitigates this in CI; locally use `--port 0` if needed.
+- **GitHub API mocking in E2E:** `page.route('**/api.github.com/**', ...)` must intercept before page load — if the route handler is registered after navigation, the real API call fires and tests become network-dependent.
+- **`noUnusedLocals` in test files:** test files in `tests/` are outside `tsconfig.app.json` scope so `vue-tsc -b` won't flag them — but Vitest uses esbuild for transpilation so TS errors in test files are not caught at build time. Add a `tsconfig.test.json` if strict type-checking of tests is desired (out of scope for this plan).
