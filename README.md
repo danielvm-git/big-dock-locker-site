@@ -1,5 +1,43 @@
-# Vue 3 + TypeScript + Vite
+# Big Dock Locker — Website
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+The official public website for the [big-dock-locker](https://github.com/danielvm-git/big-dock-locker) app.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Tech/framework used
+
+| Tool | Purpose |
+|------|---------|
+| **Vue 3** | Reactive UI framework |
+| **Vite** | Dev server, HMR, build bundler |
+| **TypeScript** | Type-safe codebase |
+| **Sentry** | Error monitoring (`@sentry/vue`) |
+| **Node.js 24 LTS** | Runtime |
+
+## Architecture
+
+A single-page application with sections for Home, Features, Pricing, Docs, Blog, and Contact.
+
+## Installation
+
+```bash
+npm install
+```
+
+## How to use
+
+```bash
+npm run dev       # start dev server
+npm run build     # production build (vue-tsc -b && vite build)
+npm run preview   # preview production build
+```
+
+Deployed via Netlify (`netlify.toml`); releases are automated with semantic-release.
+
+## Contribute
+
+1. Create a feature branch
+2. Follow the conventions in [CLAUDE.md](CLAUDE.md) / [CONVENTIONS.md](CONVENTIONS.md)
+3. Run build before opening a Pull Request
+
+## License
+
+MIT — see [LICENSE](./LICENSE) for details.
