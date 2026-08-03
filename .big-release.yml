@@ -1,0 +1,29 @@
+# Branch configuration
+branches:
+  - main
+
+# Tag format
+tagFormat: "v${version}"
+
+# Plugins
+plugins:
+  - changelog
+  - git
+  - github
+
+# Commit type sections in changelog
+commitTypes:
+  - type: feat
+    section: Features
+  - type: fix
+    section: Bug Fixes
+  - type: perf
+    section: Performance
+  - type: revert
+    section: Reverts
+  - type: docs
+    hidden: true
+  - type: chore
+    hidden: true
+  - type: refactor
+    hidden: true
