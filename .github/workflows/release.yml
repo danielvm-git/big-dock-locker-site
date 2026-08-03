@@ -21,7 +21,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -32,6 +31,13 @@ jobs:
 
       - run: npm run build
 
-      - run: npx semantic-release
+      - name: Install big-release
+        run: |
+          curl -sL https://github.com/danielvm-git/big-release/releases/latest/download/big-release-linux-amd64 -o big-release
+          chmod +x big-release
+          sudo mv big-release /usr/local/bin/
+
+      - name: Run big-release
+        run: big-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
