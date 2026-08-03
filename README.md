@@ -30,7 +30,7 @@ npm run build     # production build (vue-tsc -b && vite build)
 npm run preview   # preview production build
 ```
 
-Deployed via Netlify (`netlify.toml`); releases are automated with semantic-release.
+Deployed via Netlify (`netlify.toml`); releases are automated with big-release.
 
 ## Contribute
 

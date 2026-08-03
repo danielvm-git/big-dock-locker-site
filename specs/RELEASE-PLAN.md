@@ -1,6 +1,6 @@
 # RELEASE-PLAN: Big DockLocker Marketing Website
 
-**Goal:** Ship a polished, single-page Vue 3 + TypeScript + Vite marketing site for Big DockLocker that drives downloads from GitHub Releases. Download links and version badges are always live — they resolve from the GitHub Releases API at runtime so the site never needs a manual update when a new build ships. Releases are automated via semantic-release on every push to `main`.
+**Goal:** Ship a polished, single-page Vue 3 + TypeScript + Vite marketing site for Big DockLocker that drives downloads from GitHub Releases. Download links and version badges are always live — they resolve from the GitHub Releases API at runtime so the site never needs a manual update when a new build ships. Releases are automated via big-release on every push to `main`.
 
 **Success:** `npm run build` exits 0 with no TypeScript errors; every section is visible; download buttons resolve to the actual latest DMG assets from the GitHub API; site is fully responsive; a `git commit -m "feat: ..."` on main triggers a versioned GitHub Release automatically.
 
@@ -10,16 +10,14 @@
 
 ### Story 0: Repository & Release Automation
 
-**Context:** The site has no git repo yet and no CI. This story initialises the repo, wires semantic-release (already installed as devDependencies), and creates the GitHub Actions workflow that builds and releases on every push to `main`. Mirrors the config used in the app repo (`bigpowers-dock`) — same plugin chain, same branch model, minus the exec/DMG steps that only apply to the native app.
+**Context:** The site initialises release automation using `big-release` via `.big-release.yml` and creates the GitHub Actions workflow that builds and releases on every push to `main`.
 
-**Semantic-release plugins used:**
+**Big-release plugins used:**
 | Plugin | Role |
 |---|---|
-| `@semantic-release/commit-analyzer` | Reads Conventional Commits, decides version bump |
-| `@semantic-release/release-notes-generator` | Generates changelog content |
-| `@semantic-release/changelog` | Writes/updates `CHANGELOG.md` |
-| `@semantic-release/git` | Commits `CHANGELOG.md` back to `main` |
-| `@semantic-release/github` | Creates the GitHub Release with notes |
+| `changelog` | Writes/updates `CHANGELOG.md` |
+| `git` | Commits `CHANGELOG.md` back to `main` |
+| `github` | Creates the GitHub Release with notes |
 
 ## Steps
 
@@ -27,9 +25,9 @@
 
 2. Create `.gitignore` with `node_modules/`, `dist/`, `.env*` → verify: `grep node_modules .gitignore && echo OK`
 
-3. Create `.releaserc.json` with `branches: ["main"]` and the five-plugin chain (`commit-analyzer`, `release-notes-generator`, `changelog`, `git` committing `CHANGELOG.md`, `github`) — no npm publish since `"private": true` → verify: `node -e "require('./.releaserc.json')" && echo OK`
+3. Create `.big-release.yml` with `branches: ["main"]` and plugin chain (`changelog`, `git` committing `CHANGELOG.md`, `github`) → verify: `test -f .big-release.yml && echo OK`
 
-4. Create `.github/workflows/release.yml` — trigger: `push: branches: [main]`; steps: `actions/checkout@v4` (with `persist-credentials: false`), `actions/setup-node@v4` (node 24), `npm ci`, `npm run build`, `npx semantic-release`; env: `GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` → verify: `cat .github/workflows/release.yml | grep -q "semantic-release" && echo OK`
+4. Create `.github/workflows/release.yml` — trigger: `push: branches: [main]`; steps: `actions/checkout@v4`, `actions/setup-node@v4` (node 24), `npm ci`, `npm run build`, install `big-release`, run `big-release`; env: `GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` → verify: `cat .github/workflows/release.yml | grep -q "big-release" && echo OK`
 
 ---
 
