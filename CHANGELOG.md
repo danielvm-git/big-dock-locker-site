@@ -1,20 +1,18 @@
 # 1.0.0 (2026-08-03)
 
-
 ### Bug Fixes
 
-* correct Netlify domain in OG meta tags ([bd016ce](https://github.com/danielvm-git/big-dock-locker-site/commit/bd016ced57ffdd48f8882701a025d9dd8433f178))
-* use dashboard screenshot for social media preview image ([524c210](https://github.com/danielvm-git/big-dock-locker-site/commit/524c2108a3b98dd7221412eb59e50008d5342fed))
-
+- correct Netlify domain in OG meta tags ([bd016ce](https://github.com/danielvm-git/big-dock-locker-site/commit/bd016ced57ffdd48f8882701a025d9dd8433f178))
+- use dashboard screenshot for social media preview image ([524c210](https://github.com/danielvm-git/big-dock-locker-site/commit/524c2108a3b98dd7221412eb59e50008d5342fed))
 
 ### Features
 
-* add Sentry observability — page tracing, session replay, download tracking ([9e24260](https://github.com/danielvm-git/big-dock-locker-site/commit/9e24260380b0c1a76b97b7ef270ad352d754da84))
-* add Sentry release health — release tag and environment injected at build time ([a245be3](https://github.com/danielvm-git/big-dock-locker-site/commit/a245be391c2db00ad5dd7ecf127e1c97cb2dd533))
-* add Sentry release pipeline — source maps, commit association, deploy notification ([8da1985](https://github.com/danielvm-git/big-dock-locker-site/commit/8da19859dcecb276db9d495e671b96776b18420c))
-* launch Big DockLocker marketing website ([8067724](https://github.com/danielvm-git/big-dock-locker-site/commit/80677247c9de91d70e0da77710dee1089b8b884c))
-* optimistic download counter increment and refetch on tab focus ([c1d4636](https://github.com/danielvm-git/big-dock-locker-site/commit/c1d46364bf3538314d5f7b5877e574c8c7d5f424))
-* show GitHub release download counts on hero and download section ([9ff440e](https://github.com/danielvm-git/big-dock-locker-site/commit/9ff440e8506938ae96dd97e35cbcd266d658b660))
+- add Sentry observability — page tracing, session replay, download tracking ([9e24260](https://github.com/danielvm-git/big-dock-locker-site/commit/9e24260380b0c1a76b97b7ef270ad352d754da84))
+- add Sentry release health — release tag and environment injected at build time ([a245be3](https://github.com/danielvm-git/big-dock-locker-site/commit/a245be391c2db00ad5dd7ecf127e1c97cb2dd533))
+- add Sentry release pipeline — source maps, commit association, deploy notification ([8da1985](https://github.com/danielvm-git/big-dock-locker-site/commit/8da19859dcecb276db9d495e671b96776b18420c))
+- launch Big DockLocker marketing website ([8067724](https://github.com/danielvm-git/big-dock-locker-site/commit/80677247c9de91d70e0da77710dee1089b8b884c))
+- optimistic download counter increment and refetch on tab focus ([c1d4636](https://github.com/danielvm-git/big-dock-locker-site/commit/c1d46364bf3538314d5f7b5877e574c8c7d5f424))
+- show GitHub release download counts on hero and download section ([9ff440e](https://github.com/danielvm-git/big-dock-locker-site/commit/9ff440e8506938ae96dd97e35cbcd266d658b660))
 
 # [1.4.0](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.3.0...v1.4.0) (2026-05-21)
 
