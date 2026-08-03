@@ -26,8 +26,7 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
       <p class="section-label">Download</p>
       <h2 class="section-title">Free. Open-source. Always.</h2>
       <p class="section-sub">
-        Big DockLocker is MIT-licensed and free forever.
-        Pick the build that matches your Mac.
+        Big DockLocker is MIT-licensed and free forever. Pick the build that matches your Mac.
       </p>
 
       <div class="version-badge" :class="{ skeleton: loading }">
@@ -43,7 +42,9 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
           @click="trackDownload('apple-silicon')"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M17 12l-5 5-5-5 1.41-1.41L11 13.17V6h2v7.17l2.59-2.58L17 12zm-5 7a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-16C6.48 3 2 7.48 2 13s4.48 10 10 10 10-4.48 10-10S17.52 3 12 3z" />
+            <path
+              d="M17 12l-5 5-5-5 1.41-1.41L11 13.17V6h2v7.17l2.59-2.58L17 12zm-5 7a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-16C6.48 3 2 7.48 2 13s4.48 10 10 10 10-4.48 10-10S17.52 3 12 3z"
+            />
           </svg>
           {{ loading ? 'Loading…' : 'Apple Silicon (M1–M4)' }}
         </a>
@@ -54,7 +55,9 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
           @click="trackDownload('intel')"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M17 12l-5 5-5-5 1.41-1.41L11 13.17V6h2v7.17l2.59-2.58L17 12zm-5 7a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-16C6.48 3 2 7.48 2 13s4.48 10 10 10 10-4.48 10-10S17.52 3 12 3z" />
+            <path
+              d="M17 12l-5 5-5-5 1.41-1.41L11 13.17V6h2v7.17l2.59-2.58L17 12zm-5 7a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-16C6.48 3 2 7.48 2 13s4.48 10 10 10 10-4.48 10-10S17.52 3 12 3z"
+            />
           </svg>
           {{ loading ? 'Loading…' : 'Intel Mac' }}
         </a>

@@ -4,7 +4,7 @@
 
 ## Problem Statement
 
-The repository currently uses `semantic-release` and 5 associated npm package dependencies (`@semantic-release/changelog`, `@semantic-release/commit-analyzer`, `@semantic-release/git`, `@semantic-release/github`, `@semantic-release/release-notes-generator`) configured via `.releaserc.json` in `.github/workflows/release.yml`. 
+The repository currently uses `semantic-release` and 5 associated npm package dependencies (`@semantic-release/changelog`, `@semantic-release/commit-analyzer`, `@semantic-release/git`, `@semantic-release/github`, `@semantic-release/release-notes-generator`) configured via `.releaserc.json` in `.github/workflows/release.yml`.
 `semantic-release` introduces a heavy Node dependency footprint for release orchestration. We need to transition to `big-release` (a fast, lightweight Go binary CLI from `https://github.com/danielvm-git/big-release`).
 
 ## Solution

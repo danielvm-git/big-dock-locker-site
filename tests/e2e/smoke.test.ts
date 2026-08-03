@@ -7,21 +7,21 @@ const API_FIXTURE = {
   assets: [
     {
       name: 'big-dock-locker-apple-silicon.dmg',
-      browser_download_url: 'https://github.com/danielvm-git/big-dock-locker/releases/download/v1.3.0/big-dock-locker-apple-silicon.dmg',
+      browser_download_url:
+        'https://github.com/danielvm-git/big-dock-locker/releases/download/v1.3.0/big-dock-locker-apple-silicon.dmg',
       download_count: 80,
     },
     {
       name: 'big-dock-locker-intel.dmg',
-      browser_download_url: 'https://github.com/danielvm-git/big-dock-locker/releases/download/v1.3.0/big-dock-locker-intel.dmg',
+      browser_download_url:
+        'https://github.com/danielvm-git/big-dock-locker/releases/download/v1.3.0/big-dock-locker-intel.dmg',
       download_count: 20,
     },
   ],
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.route(GITHUB_API_GLOB, (route) =>
-    route.fulfill({ json: API_FIXTURE }),
-  )
+  await page.route(GITHUB_API_GLOB, (route) => route.fulfill({ json: API_FIXTURE }))
 })
 
 test('page title is correct', async ({ page }) => {

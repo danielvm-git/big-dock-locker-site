@@ -30,11 +30,7 @@ const steps: Step[] = [
       <p class="section-label">Setup</p>
       <h2 class="section-title">Up and running in three steps.</h2>
       <div class="steps">
-        <div
-          v-for="(step, i) in steps"
-          :key="step.num"
-          class="step"
-        >
+        <div v-for="(step, i) in steps" :key="step.num" class="step">
           <div class="step-connector" v-if="i < steps.length - 1" aria-hidden="true" />
           <div class="step-num">{{ step.num }}</div>
           <h3 class="step-title">{{ step.title }}</h3>

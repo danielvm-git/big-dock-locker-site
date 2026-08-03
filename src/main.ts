@@ -10,10 +10,7 @@ Sentry.init({
   dsn: 'https://6c4c063396e924e672faa745554e17c1@o4511429219450880.ingest.us.sentry.io/4511429223251968',
   release: `big-dock-locker-site@${__APP_VERSION__}`,
   environment: import.meta.env.MODE,
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
-  ],
+  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
   tracesSampleRate: 1.0,
   tracePropagationTargets: ['localhost', /^https:\/\/bigdocklocker\.netlify\.app/],
   replaysSessionSampleRate: 0.1,

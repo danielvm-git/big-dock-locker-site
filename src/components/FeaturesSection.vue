@@ -40,8 +40,8 @@ const features: Feature[] = [
       <p class="section-label">Why Big DockLocker</p>
       <h2 class="section-title">Everything you need. Nothing you don't.</h2>
       <p class="section-sub">
-        Lightweight (under 1 MB), sandboxed, no system modifications.
-        Just rock-solid Dock stability for multi-monitor power users.
+        Lightweight (under 1 MB), sandboxed, no system modifications. Just rock-solid Dock stability
+        for multi-monitor power users.
       </p>
       <div class="features-grid">
         <article v-for="f in features" :key="f.title" class="feature-card">

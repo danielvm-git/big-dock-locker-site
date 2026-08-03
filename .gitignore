@@ -21,5 +21,9 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+# Testing
+test-results
+playwright-report
+
 .env*
+

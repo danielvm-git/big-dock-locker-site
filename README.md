@@ -4,13 +4,13 @@ The official public website for the [big-dock-locker](https://github.com/danielv
 
 ## Tech/framework used
 
-| Tool | Purpose |
-|------|---------|
-| **Vue 3** | Reactive UI framework |
-| **Vite** | Dev server, HMR, build bundler |
-| **TypeScript** | Type-safe codebase |
-| **Sentry** | Error monitoring (`@sentry/vue`) |
-| **Node.js 24 LTS** | Runtime |
+| Tool               | Purpose                          |
+| ------------------ | -------------------------------- |
+| **Vue 3**          | Reactive UI framework            |
+| **Vite**           | Dev server, HMR, build bundler   |
+| **TypeScript**     | Type-safe codebase               |
+| **Sentry**         | Error monitoring (`@sentry/vue`) |
+| **Node.js 24 LTS** | Runtime                          |
 
 ## Architecture
 

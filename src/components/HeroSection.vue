@@ -27,8 +27,8 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
         <p class="section-label">Free &amp; Open Source · macOS 13+</p>
         <h1 class="hero-headline">Pin Your Dock.<br />Keep It There.</h1>
         <p class="hero-sub">
-          Big DockLocker stops your Mac Dock from jumping to another display when
-          your mouse grazes the screen edge. One click — always on the right monitor.
+          Big DockLocker stops your Mac Dock from jumping to another display when your mouse grazes
+          the screen edge. One click — always on the right monitor.
         </p>
         <div class="hero-actions">
           <a
@@ -38,8 +38,12 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
             @click="trackDownload('apple-silicon')"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-              <path d="M18.71 7.21l-1.42-1.42L12 11.09 6.71 5.79 5.29 7.21l5.3 5.29-5.3 5.29 1.42 1.42L12 13.91l5.29 5.3 1.42-1.42-5.3-5.29 5.3-5.29z" />
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"
+              />
+              <path
+                d="M18.71 7.21l-1.42-1.42L12 11.09 6.71 5.79 5.29 7.21l5.3 5.29-5.3 5.29 1.42 1.42L12 13.91l5.29 5.3 1.42-1.42-5.3-5.29 5.3-5.29z"
+              />
             </svg>
             {{ loading ? 'Loading…' : 'Apple Silicon' }}
           </a>
@@ -62,11 +66,7 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
         </p>
       </div>
       <div class="hero-screenshot">
-        <img
-          src="/dashboard.png"
-          alt="Big DockLocker dashboard"
-          class="hero-img"
-        />
+        <img src="/dashboard.png" alt="Big DockLocker dashboard" class="hero-img" />
       </div>
     </div>
   </section>
@@ -160,6 +160,8 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
   width: auto;
   max-width: 100%;
   border-radius: 16px;
-  box-shadow: var(--shadow), 0 32px 64px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    var(--shadow),
+    0 32px 64px rgba(0, 0, 0, 0.12);
 }
 </style>

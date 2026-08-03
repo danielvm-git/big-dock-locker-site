@@ -7,7 +7,9 @@ const copied = ref(false)
 function copyCommand() {
   navigator.clipboard.writeText(COMMAND).then(() => {
     copied.value = true
-    setTimeout(() => { copied.value = false }, 2000)
+    setTimeout(() => {
+      copied.value = false
+    }, 2000)
   })
 }
 </script>
@@ -18,8 +20,8 @@ function copyCommand() {
       <p class="section-label">Installation</p>
       <h2 class="section-title">Getting past Gatekeeper.</h2>
       <p class="section-sub">
-        Because Big DockLocker is distributed outside the Mac App Store, macOS
-        will warn you on first launch. Follow these steps once and you're done.
+        Because Big DockLocker is distributed outside the Mac App Store, macOS will warn you on
+        first launch. Follow these steps once and you're done.
       </p>
 
       <div class="install-steps">
@@ -29,10 +31,9 @@ function copyCommand() {
             <h3>Allow the App</h3>
             <p>
               Open the <strong>Applications</strong> folder and double-click
-              <strong>Big DockLocker</strong>. When the warning appears, click
-              <strong>OK</strong>. Then open
-              <strong>System Settings → Privacy &amp; Security</strong>, scroll
-              to the Security section, and click <strong>Open Anyway</strong>.
+              <strong>Big DockLocker</strong>. When the warning appears, click <strong>OK</strong>.
+              Then open <strong>System Settings → Privacy &amp; Security</strong>, scroll to the
+              Security section, and click <strong>Open Anyway</strong>.
             </p>
           </div>
         </div>
@@ -42,10 +43,9 @@ function copyCommand() {
           <div class="install-step-body">
             <h3>Grant Accessibility</h3>
             <p>
-              Open <strong>System Settings → Privacy &amp; Security →
-              Accessibility</strong>. Click the <strong>+</strong> button, add
-              Big DockLocker from your Applications folder, and toggle the
-              switch <strong>ON</strong>.
+              Open <strong>System Settings → Privacy &amp; Security → Accessibility</strong>. Click
+              the <strong>+</strong> button, add Big DockLocker from your Applications folder, and
+              toggle the switch <strong>ON</strong>.
             </p>
           </div>
         </div>
@@ -55,8 +55,8 @@ function copyCommand() {
           <div class="install-step-body">
             <h3>Power User Shortcut</h3>
             <p>
-              Skip the System Settings steps entirely by running this command in
-              Terminal — it removes the quarantine flag directly:
+              Skip the System Settings steps entirely by running this command in Terminal — it
+              removes the quarantine flag directly:
             </p>
             <div class="code-block">
               <code>{{ COMMAND }}</code>
@@ -153,7 +153,10 @@ function copyCommand() {
   font-family: var(--sans);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 
   &:hover {
     border-color: var(--accent-border);
