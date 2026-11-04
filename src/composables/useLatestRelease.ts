@@ -1,93 +1,186 @@
-import { ref, readonly } from 'vue'
+import { computed, shallowRef } from 'vue'
+import { DEFAULT_TIMEOUT_MS, createInitialState, releaseReducer } from '../machines/releaseMachine'
+import type {
+  Asset,
+  DownloadArch,
+  FailureReason,
+  Release,
+  ReleaseEvent,
+  ReleaseState,
+} from '../machines/releaseMachine'
 
-interface Asset {
-  name: string
-  browser_download_url: string
-  download_count: number
+interface GitHubReleasePayload {
+  tag_name?: string
+  assets?: Asset[]
 }
 
-interface Release {
-  tag: string
-  silicon: string
-  intel: string
-  downloads: {
-    silicon: number
-    intel: number
-    total: number
-  }
+interface UseLatestReleaseOptions {
+  timeoutMs?: number
 }
 
+const API_URL = 'https://api.github.com/repos/danielvm-git/big-dock-locker/releases/latest'
 const FALLBACK = 'https://github.com/danielvm-git/big-dock-locker/releases/latest'
 
-const release = ref<Release | null>(null)
-const loading = ref(false)
-const error = ref(false)
+const state = shallowRef<ReleaseState>(createInitialState())
 
-function fetchRelease() {
-  if (loading.value) return
-  loading.value = true
+let timeoutMs = DEFAULT_TIMEOUT_MS
+let controller: AbortController | null = null
+let timeoutHandle: ReturnType<typeof setTimeout> | null = null
+let generation = 0
+let listenerAttached = false
+let visibilityHandler: (() => void) | null = null
 
-  fetch('https://api.github.com/repos/danielvm-git/big-dock-locker/releases/latest')
-    .then((r) => r.json())
-    .then((data) => {
-      const siliconAsset: Asset | undefined = data.assets?.find((a: Asset) =>
-        a.name.includes('apple-silicon'),
-      )
-      const intelAsset: Asset | undefined = data.assets?.find((a: Asset) =>
-        a.name.includes('intel'),
-      )
-      const siliconCount = siliconAsset?.download_count ?? 0
-      const intelCount = intelAsset?.download_count ?? 0
-      release.value = {
-        tag: data.tag_name ?? '',
-        silicon: siliconAsset?.browser_download_url ?? FALLBACK,
-        intel: intelAsset?.browser_download_url ?? FALLBACK,
-        downloads: {
-          silicon: siliconCount,
-          intel: intelCount,
-          total: siliconCount + intelCount,
-        },
-      }
-      error.value = false
-    })
-    .catch(() => {
-      error.value = true
-    })
-    .finally(() => {
-      loading.value = false
-    })
+const release = computed<Release | null>(() => {
+  const current = state.value
+  return current.status === 'ready' || current.status === 'refreshing' ? current.release : null
+})
+const loading = computed(
+  () => state.value.status === 'loading' || state.value.status === 'refreshing',
+)
+const error = computed(() => state.value.status === 'failed')
+
+function dispatch(event: ReleaseEvent) {
+  state.value = releaseReducer(state.value, event)
 }
 
-function incrementDownload(arch: 'apple-silicon' | 'intel') {
-  if (!release.value) return
-  release.value = {
-    ...release.value,
+function createHttpError(status: number) {
+  const err = new Error(`GitHub API responded with ${status}`) as Error & { isHttp?: boolean }
+  err.isHttp = true
+  return err
+}
+
+function classifyFailure(err: unknown): FailureReason {
+  if (err instanceof SyntaxError) return 'parse'
+  if (typeof err === 'object' && err !== null && (err as { isHttp?: boolean }).isHttp) return 'http'
+  return 'network'
+}
+
+function parseRelease(data: GitHubReleasePayload): Release {
+  const siliconAsset = data.assets?.find((a) => a.name.includes('apple-silicon'))
+  const intelAsset = data.assets?.find((a) => a.name.includes('intel'))
+  const siliconCount = siliconAsset?.download_count ?? 0
+  const intelCount = intelAsset?.download_count ?? 0
+  return {
+    tag: data.tag_name ?? '',
+    silicon: siliconAsset?.browser_download_url ?? FALLBACK,
+    intel: intelAsset?.browser_download_url ?? FALLBACK,
     downloads: {
-      silicon: release.value.downloads.silicon + (arch === 'apple-silicon' ? 1 : 0),
-      intel: release.value.downloads.intel + (arch === 'intel' ? 1 : 0),
-      total: release.value.downloads.total + 1,
+      silicon: siliconCount,
+      intel: intelCount,
+      total: siliconCount + intelCount,
     },
   }
 }
 
-// Refetch when user returns to tab (GitHub may have updated by then)
-if (typeof document !== 'undefined') {
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && release.value) {
-      fetchRelease()
-    }
-  })
+function clearTimer() {
+  if (timeoutHandle !== null) {
+    clearTimeout(timeoutHandle)
+    timeoutHandle = null
+  }
 }
 
-export function useLatestRelease() {
-  if (!release.value && !loading.value) {
-    fetchRelease()
+function startFetch() {
+  if (controller) return
+
+  const currentGeneration = ++generation
+  const currentController = new AbortController()
+  controller = currentController
+  let timedOut = false
+
+  timeoutHandle = setTimeout(() => {
+    timedOut = true
+    currentController.abort()
+  }, timeoutMs)
+
+  fetch(API_URL, { signal: currentController.signal })
+    .then((response) => {
+      if (!response.ok) throw createHttpError(response.status)
+      return response.json()
+    })
+    .then((data: GitHubReleasePayload) => {
+      settle(currentGeneration, () => ({
+        type: 'FETCH_OK',
+        release: parseRelease(data),
+      }))
+    })
+    .catch((err: unknown) => {
+      settle(currentGeneration, () => ({
+        type: 'FETCH_ERR',
+        reason: timedOut ? 'timeout' : classifyFailure(err),
+      }))
+    })
+}
+
+function settle(currentGeneration: number, event: () => ReleaseEvent) {
+  if (currentGeneration !== generation) return
+  clearTimer()
+  controller = null
+  dispatch(event())
+  maybeStartFetch()
+}
+
+function maybeStartFetch() {
+  if (controller) return
+  if (state.value.status === 'loading' || state.value.status === 'refreshing') {
+    startFetch()
+  }
+}
+
+function incrementDownload(arch: DownloadArch) {
+  dispatch({ type: 'INCREMENT', arch })
+}
+
+function retry() {
+  if (state.value.status !== 'idle' && state.value.status !== 'failed') return
+  dispatch({ type: 'USE' })
+  maybeStartFetch()
+}
+
+function ensureListener() {
+  if (listenerAttached || typeof document === 'undefined') return
+  visibilityHandler = () => {
+    if (document.visibilityState !== 'visible') return
+    dispatch({ type: 'VISIBLE' })
+    maybeStartFetch()
+  }
+  document.addEventListener('visibilitychange', visibilityHandler)
+  listenerAttached = true
+}
+
+function dispose() {
+  // Invalidate any in-flight settle callback, then release owned resources.
+  generation += 1
+  clearTimer()
+  controller?.abort()
+  controller = null
+  if (listenerAttached && visibilityHandler) {
+    document.removeEventListener('visibilitychange', visibilityHandler)
+    listenerAttached = false
+    visibilityHandler = null
+  }
+  state.value = createInitialState()
+}
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => dispose())
+}
+
+export function useLatestRelease(options: UseLatestReleaseOptions = {}) {
+  if (options.timeoutMs !== undefined) timeoutMs = options.timeoutMs
+
+  ensureListener()
+
+  if (state.value.status === 'idle' || state.value.status === 'failed') {
+    dispatch({ type: 'USE' })
+    maybeStartFetch()
   }
 
   return {
-    release: readonly(release),
-    loading: readonly(loading),
-    error: readonly(error),
+    release,
+    loading,
+    error,
     incrementDownload,
+    retry,
+    dispose,
   }
 }
