@@ -6,10 +6,22 @@ branches:
 tagFormat: 'v${version}'
 
 # Plugins
+# versionfile must run before git: both implement PostPublish, and the git
+# plugin commits postTagAssets after versionfile writes the file.
 plugins:
   - changelog
+  - versionfile
   - git
   - github
+
+# Version file sync (big-release v2.3.0+)
+pluginConfigs:
+  versionfile:
+    path: VERSION
+    template: '{{.Version}}'
+  git:
+    postTagAssets:
+      - VERSION
 
 # Commit type sections in changelog
 commitTypes:

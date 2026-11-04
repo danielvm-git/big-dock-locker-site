@@ -49,16 +49,3 @@ jobs:
         run: big-release release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update VERSION file
-        run: |
-          NEW_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$NEW_TAG" ]; then
-            NEW_VER="${NEW_TAG#v}"
-            echo "$NEW_VER" > VERSION
-            if ! git diff --quiet VERSION; then
-              git add VERSION
-              git commit -m "chore(release): update VERSION to $NEW_VER [skip ci]"
-              git push origin main
-            fi
-          fi
