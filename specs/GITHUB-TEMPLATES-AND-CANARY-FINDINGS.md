@@ -26,7 +26,7 @@
 | `release_tool: big-release` input   | Yes      | `big-release release --verbose`                       |
 | `release_tool` default              | No       | Defaults to `semantic-release`                        |
 | Git identity for the release plugin | No       | Only `GITHUB_TOKEN`; no `GIT_AUTHOR_*` / `git config` |
-| `VERSION` file update               | No       | No post-release step                                  |
+| `VERSION` file update               | No       | No `versionfile` config; consumers hand-roll a step   |
 | Node version                        | No       | Node 22 (this repo uses 24)                           |
 | Deploy target                       | No       | BigBase (`bigbase-deploy`), this repo uses Netlify    |
 | `persist-credentials`               | Yes      | `true` on the release checkout                        |
@@ -52,7 +52,7 @@ plugins:
   - github
 ```
 
-Same plugin order as this repo. The binary does **not** update a `VERSION` file itself.
+The canaries do **not** use the native `versionfile` plugin; they hand-roll a post-release step. big-release has shipped a native plugin since v2.3.0 (issue #62), but its documented top-level `versionFile` key is not wired and the docs put `versionfile` after `git` (see §3 and big-release#74).
 
 ### `VERSION` file
 
@@ -101,9 +101,11 @@ The four URLs (`go/node/python/php.bigbase.click`) currently serve the BigBase a
 Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main`
 
 - `internal/plugins/changelog.go` — `Prepare()` writes `CHANGELOG.md` from `ctx.NextRelease.Notes`.
-- `internal/plugins/git.go` — `Prepare()` stages all changes and commits `chore(release): <version> [skip ci]`; `Publish()` creates the tag and pushes commits + tags.
-- There is **no `VERSION` file handling** anywhere in `pkg/`, `internal/`, or `cmd/`. The `VERSION` bump is a workflow convention, not a binary feature.
-- `docs/reference/configuration.md` documents the plugin list but not a version-file option.
+- `internal/plugins/git.go` — `Prepare()` stages all changes and commits `chore(release): <version> [skip ci]`; `Publish()` creates the tag and pushes commits + tags; `PostPublish()` stages/commits `postTagAssets` after the tag exists.
+- `internal/plugins/versionfile.go` — native `versionfile` plugin (`PostPublish`) writes a version file from a Go template.
+- `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`) uses `plugins: [versionfile, git]` and `PluginConfigs["versionfile"]`. The order is intentional: PostPublish runs in plugin order, so `versionfile` must precede `git`.
+- Gotcha 1: the documented top-level `versionFile:` key is defined in `algorithm.Config` but never read; only `pluginConfigs.versionfile` is wired (big-release#74).
+- Gotcha 2: `docs/how-to/version-file-sync.md` recommends `plugins: [changelog, git, github, versionfile]`, which runs `git`'s PostPublish before the file is written. Use `[changelog, versionfile, git, github]` (big-release#74).
 
 ### Consequence for this repo
 
@@ -116,11 +118,11 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 ## 4. Recommendation
 
 1. **Do not migrate to the split templates yet.** They default to semantic-release, Node 22, and BigBase; this repo uses big-release, Node 24, and Netlify. Issue #1 should be closed as obsolete or answered with a validated Netlify + big-release template.
-2. **Adopt the canary `VERSION` step** in `.github/workflows/release.yml` and add a root `VERSION` file. This is the smallest change that matches the reference setup.
+2. **Use the native `versionfile` plugin** instead of the canary workflow step. Keep `versionfile` before `git`, configure `pluginConfigs.versionfile`, and set `pluginConfigs.git.postTagAssets: [VERSION]`. This removes the extra post-release commit from the workflow.
 3. **Normalize `CHANGELOG.md`** to the canary `# Changelog` + `## [Unreleased]` + `## [version]` format before relying on the changelog plugin. This is a separate, larger change because the existing history has mixed header levels.
 4. Optionally pin actions by SHA (the canaries do) and add the canary preflight/conventional-commit checks.
 
-**Applied in this branch:** root `VERSION` (`1.5.0`) plus the post-release `Update VERSION file` step in `.github/workflows/release.yml`, matching the canary pattern.
+**Applied:** root `VERSION` plus the native plugin configuration in `.big-release.yml`; the workflow no longer contains a manual VERSION step.
 
 ---
 
@@ -130,4 +132,5 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 - Static template: `workflow-templates/test-build-release-static.yml` (v4.1.1), lines 14–18 and 145–153.
 - Canary workflow: `bigbase-canary-node/.github/workflows/test-build-release.yml`, release job (`Update VERSION file` step).
 - Canary VERSION commit: `aadb270` (`chore(release): update VERSION to 0.2.0 [skip ci]`).
-- big-release source: `internal/plugins/git.go`, `internal/plugins/changelog.go`.
+- big-release source: `internal/plugins/versionfile.go`, `internal/plugins/git.go` (`PostPublish`), `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`).
+- big-release follow-up: https://github.com/danielvm-git/big-release/issues/74 (top-level config not wired; docs order).
