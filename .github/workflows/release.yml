@@ -39,6 +39,11 @@ jobs:
           chmod +x big-release
           sudo mv big-release /usr/local/bin/
 
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Run big-release
         run: big-release release
         env:
