@@ -19,6 +19,7 @@
 | D-4 duplicate visibility listener / no cleanup | Audit     | **Fixed**                  | `listenerAttached` guard + `dispose()` + `import.meta.hot.dispose`; test `registers the visibilitychange listener once and removes it on dispose` |
 | D-5 clipboard timer race / unhandled rejection | Audit     | **Fixed**                  | Explicit `idle/copying/copied/copy-error`; timer cleared on new click and unmount; rejection caught; 6 new tests                                  |
 | D-6 optimistic increments lost on refetch      | Audit     | **Fixed**                  | Pending delta reconciled into server counts; test `keeps an optimistic increment when a refetch lands`                                            |
+| D-7 `big-release` invoked without subcommand   | Execution | **Fixed**                  | Workflow ran `big-release`, which prints help and exits 0 (no release). Now runs `big-release release`                                            |
 | C2 `failed` has no retry                       | Audit     | **Fixed**                  | `retry()` + `VISIBLE` from `failed` + new-consumer retry; tests for all three                                                                     |
 | C3 unbounded `loading`/`refreshing`            | Audit     | **Fixed**                  | Same timeout/abort as D-3                                                                                                                         |
 | C4 `VISIBLE` dropped while loading             | Audit     | **Fixed**                  | `queued` flag in reducer + deferred fetch; test `coalesces visibilitychange during an in-flight load...`                                          |
@@ -66,6 +67,10 @@
 ### W4 — Integration
 
 Because commits/pushes were not authorized, integration was performed as a **functional integration**: the three worktree diffs were copied into the main working tree, then the full gate stack was run. The per-stream branches/worktrees remain intact for later commits and PRs.
+
+### D-7 — Release workflow was a no-op
+
+Verification of the post-merge Release run exposed a latent defect: `.github/workflows/release.yml` ran `big-release` with no subcommand. The binary prints its help text and exits 0, so the job reported success without creating a tag or GitHub Release. The fix is `big-release release`. This is tracked in the follow-up branch `fix/big-release-invocation`.
 
 ---
 
