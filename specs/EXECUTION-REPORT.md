@@ -11,24 +11,25 @@
 
 ## 1. Status summary
 
-| Item                                           | Source    | Status                     | Evidence                                                                                                                                          |
-| ---------------------------------------------- | --------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D-1 non-OK HTTP treated as success             | Audit     | **Fixed**                  | `useLatestRelease.ts` rejects `!response.ok`; test `treats a non-OK HTTP response...`                                                             |
-| D-2 refresh failure poisons usable data        | Audit     | **Fixed**                  | Reducer keeps `ready` on refresh error; test `keeps the last good release when a background refresh fails`                                        |
-| D-3 no fetch timeout / unbounded loading       | Audit     | **Fixed**                  | `AbortController` + `setTimeout` (10 s default); tests for initial-load and refresh timeout                                                       |
-| D-4 duplicate visibility listener / no cleanup | Audit     | **Fixed**                  | `listenerAttached` guard + `dispose()` + `import.meta.hot.dispose`; test `registers the visibilitychange listener once and removes it on dispose` |
-| D-5 clipboard timer race / unhandled rejection | Audit     | **Fixed**                  | Explicit `idle/copying/copied/copy-error`; timer cleared on new click and unmount; rejection caught; 6 new tests                                  |
-| D-6 optimistic increments lost on refetch      | Audit     | **Fixed**                  | Pending delta reconciled into server counts; test `keeps an optimistic increment when a refetch lands`                                            |
-| D-7 `big-release` invoked without subcommand   | Execution | **Fixed**                  | Workflow ran `big-release`, which prints help and exits 0 (no release). Now runs `big-release release`                                            |
-| C2 `failed` has no retry                       | Audit     | **Fixed**                  | `retry()` + `VISIBLE` from `failed` + new-consumer retry; tests for all three                                                                     |
-| C3 unbounded `loading`/`refreshing`            | Audit     | **Fixed**                  | Same timeout/abort as D-3                                                                                                                         |
-| C4 `VISIBLE` dropped while loading             | Audit     | **Fixed**                  | `queued` flag in reducer + deferred fetch; test `coalesces visibilitychange during an in-flight load...`                                          |
-| C5 optimistic/server reconciliation            | Audit     | **Fixed**                  | `reconcile()` + monotonic clamp; reducer tests                                                                                                    |
-| C7 listener lifetime                           | Audit     | **Fixed**                  | Same as D-4                                                                                                                                       |
-| SM-1 implicit release machine                  | Audit     | **Fixed**                  | `src/machines/releaseMachine.ts` pure reducer + `useLatestRelease.ts` service wrapper                                                             |
-| SM-2 implicit clipboard machine                | Audit     | **Fixed**                  | `InstallSection.vue` explicit state union                                                                                                         |
-| Issue #2 actions outdated                      | GitHub #2 | **Code fixed, not closed** | `checkout@v7`, `setup-node@v7` in both workflows; YAML + lint pass                                                                                |
-| Issue #1 CI/CD consolidation                   | GitHub #1 | **Blocked (external)**     | `ci-cd-static.yml` 404; split templates exist but are semantic-release/Netlify-conflicting; see `specs/CI-MIGRATION-FINDINGS.md`                  |
+| Item                                              | Source    | Status                     | Evidence                                                                                                                                          |
+| ------------------------------------------------- | --------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D-1 non-OK HTTP treated as success                | Audit     | **Fixed**                  | `useLatestRelease.ts` rejects `!response.ok`; test `treats a non-OK HTTP response...`                                                             |
+| D-2 refresh failure poisons usable data           | Audit     | **Fixed**                  | Reducer keeps `ready` on refresh error; test `keeps the last good release when a background refresh fails`                                        |
+| D-3 no fetch timeout / unbounded loading          | Audit     | **Fixed**                  | `AbortController` + `setTimeout` (10 s default); tests for initial-load and refresh timeout                                                       |
+| D-4 duplicate visibility listener / no cleanup    | Audit     | **Fixed**                  | `listenerAttached` guard + `dispose()` + `import.meta.hot.dispose`; test `registers the visibilitychange listener once and removes it on dispose` |
+| D-5 clipboard timer race / unhandled rejection    | Audit     | **Fixed**                  | Explicit `idle/copying/copied/copy-error`; timer cleared on new click and unmount; rejection caught; 6 new tests                                  |
+| D-6 optimistic increments lost on refetch         | Audit     | **Fixed**                  | Pending delta reconciled into server counts; test `keeps an optimistic increment when a refetch lands`                                            |
+| D-7 `big-release` invoked without subcommand      | Execution | **Fixed**                  | Workflow ran `big-release`, which prints help and exits 0 (no release). Now runs `big-release release`                                            |
+| D-8 missing git committer identity in release job | Execution | **Fixed**                  | `big-release release` failed at the git plugin with `Committer identity unknown`; workflow now configures `github-actions[bot]` before running    |
+| C2 `failed` has no retry                          | Audit     | **Fixed**                  | `retry()` + `VISIBLE` from `failed` + new-consumer retry; tests for all three                                                                     |
+| C3 unbounded `loading`/`refreshing`               | Audit     | **Fixed**                  | Same timeout/abort as D-3                                                                                                                         |
+| C4 `VISIBLE` dropped while loading                | Audit     | **Fixed**                  | `queued` flag in reducer + deferred fetch; test `coalesces visibilitychange during an in-flight load...`                                          |
+| C5 optimistic/server reconciliation               | Audit     | **Fixed**                  | `reconcile()` + monotonic clamp; reducer tests                                                                                                    |
+| C7 listener lifetime                              | Audit     | **Fixed**                  | Same as D-4                                                                                                                                       |
+| SM-1 implicit release machine                     | Audit     | **Fixed**                  | `src/machines/releaseMachine.ts` pure reducer + `useLatestRelease.ts` service wrapper                                                             |
+| SM-2 implicit clipboard machine                   | Audit     | **Fixed**                  | `InstallSection.vue` explicit state union                                                                                                         |
+| Issue #2 actions outdated                         | GitHub #2 | **Code fixed, not closed** | `checkout@v7`, `setup-node@v7` in both workflows; YAML + lint pass                                                                                |
+| Issue #1 CI/CD consolidation                      | GitHub #1 | **Blocked (external)**     | `ci-cd-static.yml` 404; split templates exist but are semantic-release/Netlify-conflicting; see `specs/CI-MIGRATION-FINDINGS.md`                  |
 
 ---
 
@@ -70,7 +71,9 @@ Because commits/pushes were not authorized, integration was performed as a **fun
 
 ### D-7 — Release workflow was a no-op
 
-Verification of the post-merge Release run exposed a latent defect: `.github/workflows/release.yml` ran `big-release` with no subcommand. The binary prints its help text and exits 0, so the job reported success without creating a tag or GitHub Release. The fix is `big-release release`. This is tracked in the follow-up branch `fix/big-release-invocation`.
+Verification of the post-merge Release run exposed a latent defect: `.github/workflows/release.yml` ran `big-release` with no subcommand. The binary prints its help text and exits 0, so the job reported success without creating a tag or GitHub Release. The fix is `big-release release`.
+
+A second post-fix run exposed D-8: the git plugin could not create a tag because the runner had no committer identity (`fatal: empty ident name`). The workflow now configures `github-actions[bot]` before invoking big-release. Both fixes are tracked in follow-up branches `fix/big-release-invocation` and `fix/big-release-git-identity`.
 
 ---
 
