@@ -3,7 +3,7 @@
 - **Date:** 2026-11-04
 - **Scope:** `danielvm-git/.github`, the four `bigbase-canary-*` reference repos, and the `big-release` source at `main`.
 - **Question:** Does `.github` now contain the CI/CD template we need, and how do the canaries keep `VERSION` in sync with each release?
-- **Update 2026-11-04:** `.github#40` and `big-release#74` are closed. The template is now production-ready for big-release (v4.2.0), and big-release v2.7.3 wires the top-level `versionFile`. A remaining ordering bug in the top-level form is tracked in `big-release#75`; this repo keeps the explicit plugin order.
+- **Update 2026-11-04:** `.github#40`, `big-release#74`, and `big-release#75` are closed. The template is production-ready for big-release (v4.2.1), and big-release v2.8.1 inserts `versionfile` before `git`, so the top-level `versionFile` form is now safe. This repo uses that form.
 
 ---
 
@@ -108,7 +108,7 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 - `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`) uses `plugins: [versionfile, git]` and `PluginConfigs["versionfile"]`. The order is intentional: PostPublish runs in plugin order, so `versionfile` must precede `git`.
 - **Fixed in v2.7.3 (#74):** the top-level `versionFile:` block is wired. `effectivePlugins()` auto-adds `versionfile`, and `versionFileConfig()` merges the top-level values with `pluginConfigs.versionfile` (explicit entries win).
 - **Docs fixed:** `docs/how-to/version-file-sync.md` now says `versionfile` must precede `git` when listed manually and documents the top-level form.
-- **Still open (#75):** the top-level form appends `versionfile` **after** the configured plugins (`effectivePlugins()` returns `append(names, "versionfile")`), and Phase 6.5 runs PostPublish in that order. With `plugins: [changelog, git, github]`, the git plugin commits `postTagAssets` before `versionfile` writes. The docs claim the top-level form handles ordering; it does not yet. Use the explicit order until #75 is fixed.
+- **Fixed in v2.8.1 (#75):** `effectivePlugins()` now inserts `versionfile` immediately before `git` when the top-level block is used, so PostPublish writes the file before the git plugin commits `postTagAssets`. Regression tests cover the effective order and a git-stub PostPublish observing the file.
 
 ### Consequence for this repo
 
@@ -121,11 +121,11 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 ## 4. Recommendation
 
 1. **Template migration is now optional.** `test-build-release-static.yml` v4.2.1 defaults to big-release, Node 24, git identity, and the VERSION step. It is still BigBase-centric; this repo should only migrate if it also switches its deploy target away from Netlify.
-2. **Keep the explicit `versionfile` order** until #75 is fixed: `plugins: [changelog, versionfile, git, github]`, `pluginConfigs.versionfile`, and `pluginConfigs.git.postTagAssets: [VERSION]`. Do not rely on the top-level form alone yet.
+2. **Use the top-level `versionFile` form** now that v2.8.1 inserts `versionfile` before `git`: `plugins: [changelog, git, github]`, `versionFile: {path: VERSION, template: "{{.Version}}"}`, and `pluginConfigs.git.postTagAssets: [VERSION]`. The explicit `plugins: [changelog, versionfile, git, github]` form still works.
 3. **Normalize `CHANGELOG.md`** to the canary `# Changelog` + `## [Unreleased]` + `## [version]` format before relying on the changelog plugin. This is a separate, larger change because the existing history has mixed header levels.
 4. Optionally pin actions by SHA (the canaries do) and add the canary preflight/conventional-commit checks.
 
-**Applied:** root `VERSION` plus the explicit native plugin configuration in `.big-release.yml`; the workflow has no manual VERSION step. Release v1.5.2 confirmed the native path writes and commits `VERSION`.
+**Applied:** root `VERSION` plus the top-level `versionFile` configuration in `.big-release.yml`; the workflow has no manual VERSION step. Release v1.5.2 confirmed the native path writes and commits `VERSION`.
 
 ---
 
@@ -136,5 +136,5 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 - Canary workflow: `bigbase-canary-node/.github/workflows/test-build-release.yml`, release job (`Update VERSION file` step).
 - Canary VERSION commit: `aadb270` (`chore(release): update VERSION to 0.2.0 [skip ci]`).
 - big-release source: `internal/plugins/versionfile.go`, `internal/plugins/git.go` (`PostPublish`), `pkg/release/release.go` (`effectivePlugins`, `versionFileConfig`), `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`).
-- big-release releases: v2.7.3 (`2d05b9e`, top-level config wired), v2.8.0 current.
-- Follow-ups: https://github.com/danielvm-git/big-release/issues/74 (fixed), https://github.com/danielvm-git/big-release/issues/75 (top-level ordering still broken).
+- big-release releases: v2.7.3 (`2d05b9e`, top-level config wired), v2.8.1 (`892f05a`, `versionfile` inserted before `git`), v2.8.1 current.
+- Follow-ups: https://github.com/danielvm-git/big-release/issues/74 (fixed), https://github.com/danielvm-git/big-release/issues/75 (fixed in v2.8.1).
