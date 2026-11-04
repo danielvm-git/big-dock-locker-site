@@ -40,6 +40,6 @@ jobs:
           sudo mv big-release /usr/local/bin/
 
       - name: Run big-release
-        run: big-release
+        run: big-release release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
