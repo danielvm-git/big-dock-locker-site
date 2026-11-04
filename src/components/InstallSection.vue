@@ -1,17 +1,71 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 
 const COMMAND = 'xattr -dr com.apple.quarantine /Applications/BigDockLocker.app'
-const copied = ref(false)
+const RESET_DELAY_MS = 2000
 
-function copyCommand() {
-  navigator.clipboard.writeText(COMMAND).then(() => {
-    copied.value = true
-    setTimeout(() => {
-      copied.value = false
-    }, 2000)
-  })
+type CopyState = 'idle' | 'copying' | 'copied' | 'copy-error'
+
+const copyState = ref<CopyState>('idle')
+let resetTimer: ReturnType<typeof setTimeout> | undefined
+
+const copyLabel = computed(() => {
+  switch (copyState.value) {
+    case 'copying':
+      return 'Copying…'
+    case 'copied':
+      return '✓ Copied'
+    case 'copy-error':
+      return 'Copy failed'
+    default:
+      return 'Copy'
+  }
+})
+
+const copyAriaLabel = computed(() => {
+  switch (copyState.value) {
+    case 'copying':
+      return 'Copying command'
+    case 'copied':
+      return 'Copied!'
+    case 'copy-error':
+      return 'Copy failed. Try again.'
+    default:
+      return 'Copy command'
+  }
+})
+
+function clearResetTimer() {
+  if (resetTimer !== undefined) {
+    clearTimeout(resetTimer)
+    resetTimer = undefined
+  }
 }
+
+function scheduleReset() {
+  clearResetTimer()
+  resetTimer = setTimeout(() => {
+    resetTimer = undefined
+    copyState.value = 'idle'
+  }, RESET_DELAY_MS)
+}
+
+async function copyCommand() {
+  if (copyState.value === 'copying') return
+
+  clearResetTimer()
+  copyState.value = 'copying'
+
+  try {
+    await navigator.clipboard.writeText(COMMAND)
+    copyState.value = 'copied'
+    scheduleReset()
+  } catch {
+    copyState.value = 'copy-error'
+  }
+}
+
+onUnmounted(clearResetTimer)
 </script>
 
 <template>
@@ -63,12 +117,16 @@ function copyCommand() {
               <button
                 type="button"
                 class="copy-btn"
-                :class="{ copied }"
+                :class="{ copied: copyState === 'copied' }"
+                :disabled="copyState === 'copying'"
+                :aria-label="copyAriaLabel"
                 @click="copyCommand"
-                :aria-label="copied ? 'Copied!' : 'Copy command'"
               >
-                {{ copied ? '✓ Copied' : 'Copy' }}
+                {{ copyLabel }}
               </button>
+              <span v-if="copyState === 'copy-error'" class="copy-error" role="alert">
+                Copy failed
+              </span>
             </div>
           </div>
         </div>
@@ -163,10 +221,21 @@ function copyCommand() {
     color: var(--accent);
   }
 
+  &:disabled {
+    cursor: progress;
+  }
+
   &.copied {
     background: var(--accent-bg);
     color: var(--accent);
     border-color: var(--accent-border);
   }
+}
+
+.copy-error {
+  flex-shrink: 0;
+  color: #d92d20;
+  font-size: 13px;
+  font-weight: 600;
 }
 </style>
