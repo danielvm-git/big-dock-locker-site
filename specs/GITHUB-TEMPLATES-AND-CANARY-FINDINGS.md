@@ -3,13 +3,15 @@
 - **Date:** 2026-11-04
 - **Scope:** `danielvm-git/.github`, the four `bigbase-canary-*` reference repos, and the `big-release` source at `main`.
 - **Question:** Does `.github` now contain the CI/CD template we need, and how do the canaries keep `VERSION` in sync with each release?
+- **Update 2026-11-04:** `.github#40` and `big-release#74` are closed. The template is now production-ready for big-release (v4.2.0), and big-release v2.7.3 wires the top-level `versionFile`. A remaining ordering bug in the top-level form is tracked in `big-release#75`; this repo keeps the explicit plugin order.
 
 ---
 
 ## 1. `.github` current state
 
-- Latest commit checked: `afe97b4` (2026-10-29), `fix(ci): check commit subjects with --format=%s, not --oneline (#39)`.
-- The repo is on template generation **v4.2.0** (commit `2e1bd38`, 2026-07-30).
+- Latest commit checked: `b48b6e0` (2026-11-04), Godot template + v4.4.0.
+- The static template is now **v4.2.1** (`workflow-templates/test-build-release-static.yml`); the template changelog is at **v4.4.0**.
+- Issue `.github#40` was resolved in PR #41 (`0767cad`): big-release is the default `release_tool`, git identity env vars are present, the post-release `VERSION` step is included, `node_version` defaults to 24, actions are pinned to `checkout@v7.0.1` / `setup-node@v7.1.0`, and the `CHANGELOG.md` header contract is documented.
 - There are still **no `ci-cd-*.yml` templates**. The `workflow-templates/` tree contains the split pairs:
   - `test-build-release-{node,python,go,php,static,monorepo,fullstack,swift,pages-*}.yml`
   - `deploy-{node,python,go,php,static,monorepo,fullstack,pages-*}.yml`
@@ -19,20 +21,20 @@
 
 ### Static template capabilities and gaps
 
-`workflow-templates/test-build-release-static.yml` (v4.1.1):
+`workflow-templates/test-build-release-static.yml` (v4.2.1):
 
-| Capability                          | Present? | Detail                                                |
-| ----------------------------------- | -------- | ----------------------------------------------------- |
-| `release_tool: big-release` input   | Yes      | `big-release release --verbose`                       |
-| `release_tool` default              | No       | Defaults to `semantic-release`                        |
-| Git identity for the release plugin | No       | Only `GITHUB_TOKEN`; no `GIT_AUTHOR_*` / `git config` |
-| `VERSION` file update               | No       | No `versionfile` config; consumers hand-roll a step   |
-| Node version                        | No       | Node 22 (this repo uses 24)                           |
-| Deploy target                       | No       | BigBase (`bigbase-deploy`), this repo uses Netlify    |
-| `persist-credentials`               | Yes      | `true` on the release checkout                        |
-| Pinned actions                      | Partial  | SHA-pinned, but `setup-node` at v6.4.0                |
+| Capability                          | Present? | Detail                                                         |
+| ----------------------------------- | -------- | -------------------------------------------------------------- |
+| `release_tool: big-release` input   | Yes      | `big-release release --verbose`                                |
+| `release_tool` default              | Yes      | Defaults to `big-release`                                      |
+| Git identity for the release plugin | Yes      | `GIT_AUTHOR_*` / `GIT_COMMITTER_*` env vars                    |
+| `VERSION` file update               | Yes      | Manual post-release step (not the native `versionfile` plugin) |
+| Node version                        | Yes      | `node_version` input, default `24`                             |
+| Deploy target                       | No       | BigBase (`bigbase-deploy`), this repo uses Netlify             |
+| `persist-credentials`               | Yes      | `true` on the release checkout                                 |
+| Pinned actions                      | Yes      | `checkout@v7.0.1`, `setup-node@v7.1.0`                         |
 
-The template is a reusable starting point, not a drop-in replacement for this repo.
+The template is now production-ready for big-release, but it remains BigBase-centric. This repo keeps its Netlify workflows.
 
 ---
 
@@ -104,8 +106,9 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 - `internal/plugins/git.go` — `Prepare()` stages all changes and commits `chore(release): <version> [skip ci]`; `Publish()` creates the tag and pushes commits + tags; `PostPublish()` stages/commits `postTagAssets` after the tag exists.
 - `internal/plugins/versionfile.go` — native `versionfile` plugin (`PostPublish`) writes a version file from a Go template.
 - `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`) uses `plugins: [versionfile, git]` and `PluginConfigs["versionfile"]`. The order is intentional: PostPublish runs in plugin order, so `versionfile` must precede `git`.
-- Gotcha 1: the documented top-level `versionFile:` key is defined in `algorithm.Config` but never read; only `pluginConfigs.versionfile` is wired (big-release#74).
-- Gotcha 2: `docs/how-to/version-file-sync.md` recommends `plugins: [changelog, git, github, versionfile]`, which runs `git`'s PostPublish before the file is written. Use `[changelog, versionfile, git, github]` (big-release#74).
+- **Fixed in v2.7.3 (#74):** the top-level `versionFile:` block is wired. `effectivePlugins()` auto-adds `versionfile`, and `versionFileConfig()` merges the top-level values with `pluginConfigs.versionfile` (explicit entries win).
+- **Docs fixed:** `docs/how-to/version-file-sync.md` now says `versionfile` must precede `git` when listed manually and documents the top-level form.
+- **Still open (#75):** the top-level form appends `versionfile` **after** the configured plugins (`effectivePlugins()` returns `append(names, "versionfile")`), and Phase 6.5 runs PostPublish in that order. With `plugins: [changelog, git, github]`, the git plugin commits `postTagAssets` before `versionfile` writes. The docs claim the top-level form handles ordering; it does not yet. Use the explicit order until #75 is fixed.
 
 ### Consequence for this repo
 
@@ -117,20 +120,21 @@ Source: `/Users/danielvm/.opensrc/repos/github.com/danielvm-git/big-release/main
 
 ## 4. Recommendation
 
-1. **Do not migrate to the split templates yet.** They default to semantic-release, Node 22, and BigBase; this repo uses big-release, Node 24, and Netlify. Issue #1 should be closed as obsolete or answered with a validated Netlify + big-release template.
-2. **Use the native `versionfile` plugin** instead of the canary workflow step. Keep `versionfile` before `git`, configure `pluginConfigs.versionfile`, and set `pluginConfigs.git.postTagAssets: [VERSION]`. This removes the extra post-release commit from the workflow.
+1. **Template migration is now optional.** `test-build-release-static.yml` v4.2.1 defaults to big-release, Node 24, git identity, and the VERSION step. It is still BigBase-centric; this repo should only migrate if it also switches its deploy target away from Netlify.
+2. **Keep the explicit `versionfile` order** until #75 is fixed: `plugins: [changelog, versionfile, git, github]`, `pluginConfigs.versionfile`, and `pluginConfigs.git.postTagAssets: [VERSION]`. Do not rely on the top-level form alone yet.
 3. **Normalize `CHANGELOG.md`** to the canary `# Changelog` + `## [Unreleased]` + `## [version]` format before relying on the changelog plugin. This is a separate, larger change because the existing history has mixed header levels.
 4. Optionally pin actions by SHA (the canaries do) and add the canary preflight/conventional-commit checks.
 
-**Applied:** root `VERSION` plus the native plugin configuration in `.big-release.yml`; the workflow no longer contains a manual VERSION step.
+**Applied:** root `VERSION` plus the explicit native plugin configuration in `.big-release.yml`; the workflow has no manual VERSION step. Release v1.5.2 confirmed the native path writes and commits `VERSION`.
 
 ---
 
 ## 5. Evidence
 
-- `.github` commits: `afe97b4`, `2e1bd38` (v4.2.0), `332d0fa` (v4.0.0).
-- Static template: `workflow-templates/test-build-release-static.yml` (v4.1.1), lines 14–18 and 145–153.
+- `.github` commits: `b48b6e0` (v4.4.0, Godot), `0767cad` (#41, static template v4.2.1), `2e1bd38` (v4.2.0).
+- Static template: `workflow-templates/test-build-release-static.yml` (v4.2.1), release job.
 - Canary workflow: `bigbase-canary-node/.github/workflows/test-build-release.yml`, release job (`Update VERSION file` step).
 - Canary VERSION commit: `aadb270` (`chore(release): update VERSION to 0.2.0 [skip ci]`).
-- big-release source: `internal/plugins/versionfile.go`, `internal/plugins/git.go` (`PostPublish`), `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`).
-- big-release follow-up: https://github.com/danielvm-git/big-release/issues/74 (top-level config not wired; docs order).
+- big-release source: `internal/plugins/versionfile.go`, `internal/plugins/git.go` (`PostPublish`), `pkg/release/release.go` (`effectivePlugins`, `versionFileConfig`), `pkg/release/e2e_test.go` (`TestE2E_VersionFileSync`).
+- big-release releases: v2.7.3 (`2d05b9e`, top-level config wired), v2.8.0 current.
+- Follow-ups: https://github.com/danielvm-git/big-release/issues/74 (fixed), https://github.com/danielvm-git/big-release/issues/75 (top-level ordering still broken).
