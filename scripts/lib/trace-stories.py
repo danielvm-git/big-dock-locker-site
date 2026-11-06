@@ -26,7 +26,6 @@ STRICT = int(sys.argv[5])
 MODE = sys.argv[6]
 
 # --- 1. Parse YAML files → story inventory
-_MIN_STORY_BASELINE = int(os.environ.get("MIN_STORY_BASELINE", "6"))  # floor assertion: --strict FAILs if story count drops below this
 _STRICT_UNIMPLEMENTED_STATUSES = frozenset({"backlog", "todo", "planned"})
 
 def _load_yaml(path: Path) -> dict:
@@ -41,15 +40,16 @@ def _load_yaml(path: Path) -> dict:
 release = _load_yaml(ROOT / "specs" / "release-plan.yaml")
 exec_status = _load_yaml(ROOT / "specs" / "execution-status.yaml")
 # Story status lives under `stories:`; `development_status:` only holds phase
-# metadata. Reading the wrong key made every story resolve to "backlog", which
-# in turn made --strict skip all of them as unimplemented — the gate reported
-# success while checking nothing.
+# metadata (current_iteration, phase, audit_passed). Reading the wrong key made
+# every story resolve to "backlog", which made --strict skip all of them as
+# unimplemented — the gate reported success while checking nothing.
 dev_status = exec_status.get("stories", {})
 if not isinstance(dev_status, dict):
     dev_status = {}
 
 # --- 2. Build story inventory
 stories: dict[str, dict] = {}
+unresolved_capsules: list[str] = []
 epics = release.get("epics", [])
 if not isinstance(epics, list):
     epics = []
@@ -63,12 +63,13 @@ for epic in epics:
         capsule_path = ROOT / "specs" / capsule_dir / "epic.yaml"
         # land-branch.sh moves completed capsules to specs/epics/archive/ while
         # release-plan.yaml keeps the original capsule_dir. Without this
-        # fallback every archived epic silently drops its stories, and --strict
-        # then passes on a degenerate, near-empty matrix.
+        # fallback every archived epic silently drops its stories.
         if not capsule_path.exists():
             archived = ROOT / "specs" / "epics" / "archive" / Path(capsule_dir).name / "epic.yaml"
             if archived.exists():
                 capsule_path = archived
+        if not capsule_path.exists() and eid:
+            unresolved_capsules.append(f"{eid}:{capsule_dir}")
         if capsule_path.exists():
             cap = _load_yaml(capsule_path)
             for s in cap.get("stories", []) or []:
@@ -81,6 +82,8 @@ for epic in epics:
     file_key = epic.get("file", "")
     if file_key and not capsule_dir:
         legacy_path = ROOT / "specs" / file_key
+        if not legacy_path.exists() and eid:
+            unresolved_capsules.append(f"{eid}:{file_key}")
         if legacy_path.exists():
             leg = _load_yaml(legacy_path)
             for s in leg.get("stories", []) or []:
@@ -159,9 +162,13 @@ def find_task_references(story_id: str) -> list[dict]:
         except Exception: pass
     return refs
 
-def story_status(sid: str) -> str:
-    """Status string for a story id from execution-status.yaml `stories:`."""
-    entry = dev_status.get(sid)
+def story_status(story_id: str) -> str:
+    """Status string for a story id from execution-status.yaml `stories:`.
+
+    `stories:` maps id → dict, so the raw value cannot be compared to "done"
+    directly; a bare string is still accepted for hand-written fixtures.
+    """
+    entry = dev_status.get(story_id)
     if isinstance(entry, dict):
         return entry.get("status", "backlog")
     if isinstance(entry, str):
@@ -293,10 +300,22 @@ for s in matrix_stories:
 
 # --- 8. Strict mode
 if STRICT:
-    # Floor assertion — anti-vacuity guard: if story count drops below baseline
-    # the matrix is degenerate and --strict must fail open.
-    if len(stories) < _MIN_STORY_BASELINE:
-        print(f"trace-stories.py: STRICT FAIL — story count {len(stories)} below baseline {_MIN_STORY_BASELINE}", file=sys.stderr)
+    # Floor assertion — anti-vacuity guard derived from the source of truth.
+    # A hardcoded minimum (the old `_MIN_STORY_BASELINE = 50`) can be lowered to
+    # hide a degenerate matrix, and it says nothing about *which* stories went
+    # missing. Instead, every capsule declared in release-plan.yaml must resolve
+    # to an epic.yaml (live or archived, see the archive fallback above): an
+    # unarchived, moved or renamed capsule drops that epic's stories, and the
+    # matrix silently shrinks. That is now a STRICT FAIL naming the epic.
+    #
+    # This is not "strict requires implemented stories": an unimplemented story
+    # is legitimately skipped below (see BUG-2026-07-06T205700 and
+    # scripts/test-trace-strict.sh).
+    if unresolved_capsules:
+        print(f"trace-stories.py: STRICT FAIL — declared capsules did not resolve (live or archived): {', '.join(unresolved_capsules)}", file=sys.stderr)
+        sys.exit(2)
+    if not stories:
+        print("trace-stories.py: STRICT FAIL — the matrix resolved 0 stories; release-plan.yaml and its capsules produced nothing to verify", file=sys.stderr)
         sys.exit(2)
     if matrix_stories:
         wsjf_sorted = sorted(set(s["wsjf"] for s in matrix_stories), reverse=True)

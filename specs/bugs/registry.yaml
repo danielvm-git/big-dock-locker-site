@@ -104,7 +104,14 @@ bugs:
     title: 'trace-stories --strict is vacuous upstream — wrong status key, no archive fallback, magic baseline'
     severity: high
     scope: tooling
-    status: open
+    status: fixed
+    fixed: '2026-11-06'
+    issue: 15
+    upstream_pr: 'danielvm-git/bigpowers#222'
+    upstream_merge: '3bec31c9'
+    commits:
+      - 09c76ae
+    verified: 'pytest tests/test_trace_stories.py 7 passed (5 failed against the old script); scripts/test-trace-strict.sh PASS; scripts/golden-g10-trace-anti-vacuity.sh PASS; bash scripts/trace-stories.sh --strict → 6 stories, 0 dark, exit 0 here'
     file: specs/bugs/BUG-009-trace-stories-vacuous-gate-upstream.md
     found: '2026-11-06'
     issue: 15
@@ -115,20 +122,22 @@ bugs:
       - danielvm-git/bigpowers:scripts/lib/trace-stories.py
     verify: 'bash scripts/trace-stories.sh --strict (6 stories, exit 0) + upstream pytest regression test'
     cross_repo: 'danielvm-git/bigpowers'
-    blocked_note: 'Upstream half requires write access to danielvm-git/bigpowers; local half is verifiable here.'
   - id: BUG-010
     title: 'Undecided: adopt or defer the split-pair static workflow templates'
     severity: low
     scope: ci
-    status: open
+    status: fixed
+    fixed: '2026-11-06'
+    issue: 16
+    resolution: 'defer — no trigger fired'
     file: specs/adr/0006-split-pair-workflow-templates.md
     found: '2026-11-06'
-    issue: 16
     type: chore-decisions
     priority: 4
     affected:
       - specs/adr/0006-split-pair-workflow-templates.md
     verify: 'decision record exists and the issue is closed with the reason'
+    merged_sha: '38cd054'
   - id: BUG-011
     title: 'validate-specs-yaml.sh fails on archived epic capsules and resolves them as missing'
     severity: medium

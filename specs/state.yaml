@@ -46,22 +46,24 @@ bug_cycle:
       bug: BUG-009
       type: bug
       batch: 'C'
-      worktree: '../bigpowers-trace-fix'
-      branch: 'fix/trace-stories-status'
+      worktree: '../fix-trace-stories-revendor'
+      branch: 'fix/trace-stories-revendor'
       status: in_progress
       cross_repo: 'danielvm-git/bigpowers'
       verify: 'pytest tests/test_trace_stories.py + bash scripts/trace-stories.sh --strict'
-      pr: 'danielvm-git/bigpowers#222'
-      local_step: 'upstream PR open; re-vendor scripts/lib/trace-stories.py here after it merges'
+      upstream_pr: 'danielvm-git/bigpowers#222 (merged 3bec31c9, all 4 gates green)'
+      evidence: 'upstream: pytest 7 passed, scripts/test-trace-strict.sh PASS, golden-g10 PASS. here: --strict 6 stories / 0 dark / exit 0'
     '16':
       bug: BUG-010
       type: chore-decisions
       batch: 'D'
-      worktree: '../chore-workflow-template-decision'
+      worktree: null
       branch: 'chore/workflow-template-decision'
-      status: in_progress
+      status: done
       verify: 'specs/adr/0006-split-pair-workflow-templates.md committed on main'
-      pr: null
+      pr: 18
+      merged_sha: '38cd054'
+      evidence: 'ADR 0006 on main (defer); CI 42270721873 + Release 42270721871 green; also fixed BUG-011 and BUG-013 in the same PR.'
 
 baseline:
   recorded_at: '2026-11-06'
@@ -79,7 +81,7 @@ baseline:
   note: 'Preflight green at intake — no red baseline to fix first.'
 
 handoff:
-  last_step_completed: 'batches A-D: A merged, B blocked on BUG-012, C upstream PR open, D in flight'
+  last_step_completed: 'batches A-D: A and D merged, C upstream merged + re-vendor in flight, B blocked on BUG-012'
   next_skill: 'release-branch'
   open_decisions:
     - 'BUG-012: restore the Netlify deploy path (owner action) before #14 can land'
@@ -177,4 +179,9 @@ decisions:
     gate: 'CONVENTIONS § Discovered Defects'
     topic: 'Untrack 28 committed .pyc files and ignore __pycache__'
     reason: 'Committed build artefacts polluted every diff that ran a python script. Removing them from the index changes no runtime behaviour.'
+    status: 'accepted'
+  - id: 'DEC-BUG009-UPSTREAM'
+    gate: 'release-branch Gate (cross-repo)'
+    topic: 'Shipped the trace-stories fix upstream and re-vendored it here'
+    reason: 'PR danielvm-git/bigpowers#222 merged with all four gates green (sync, skill-verify, story-verify, verification-gates). Two gate rounds were needed: the fix first broke the golden G-10 zero-story anti-vacuity check and the documented all-todo contract, which had been satisfiable only because the 50-story baseline masked them. Both are now explicit, and scripts/test-trace-strict.sh fixtures assert the real `stories:` schema with a decoy `development_status:` key.'
     status: 'accepted'
