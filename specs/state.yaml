@@ -11,27 +11,28 @@ project_cycle:
 
 epic_cycle:
   epic_id: 'e02'
-  active_story_id: 'e02s01'
-  current_step: 3
-  story_bcps: 4
-  completed_steps: [0, 1, 2]
+  active_story_id: null
+  current_step: 8
+  story_bcps: 6
+  epic_status: 'done'
+  completed_steps: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 handoff:
-  last_step_completed: 'plan-work'
-  next_skill: 'kickoff-branch'
-  open_decisions: []
+  last_step_completed: 'respond-review'
+  next_skill: 'release-branch'
+  open_decisions:
+    - 'Awaiting user decision at release-branch gate: approve PR / merge for feat/e02-live-releases'
   required_reading:
     - 'specs/release-plan.yaml'
     - 'specs/epics/e02-live-releases/epic.yaml'
-    - 'specs/epics/e02-live-releases/e02s01-tasks.yaml'
-    - 'specs/security/epics/e02/THREAT_MODEL.md'
+    - 'specs/verifications/REVIEW-e02.md'
 
 git:
-  branch: 'main'
+  branch: 'feat/e02-live-releases'
   clean: true
 
 metrics:
-  story_start: '2026-11-06T13:01:00Z'
+  story_start: '2026-11-06T13:03:00Z'
   bcp_baseline: 14
 
 decisions:
@@ -39,4 +40,24 @@ decisions:
     gate: 'build-epic Step 0 Hard Gate'
     topic: 'Standing approval to proceed with e02 autonomous build'
     reason: 'User standing approval granted for recommended path through all gates'
+    status: 'accepted'
+  - id: 'DEC-E02S01-DONE'
+    gate: 'build-epic Step 6 Audit Gate'
+    topic: 'e02s01 audit passed'
+    reason: 'Pure state machine and composable verified 100% green'
+    status: 'accepted'
+  - id: 'DEC-E02S02-DONE'
+    gate: 'build-epic Step 6 Audit Gate'
+    topic: 'e02s02 audit passed'
+    reason: 'InstallSection clipboard machine verified 100% green'
+    status: 'accepted'
+  - id: 'DEC-E02-VERIFY'
+    gate: 'verify-work UAT Gate'
+    topic: 'Epic e02 full verification passed'
+    reason: 'All 47 unit tests, 4 E2E tests, Preflight, Prettier, and strict story traceability verified green'
+    status: 'accepted'
+  - id: 'DEC-E02-REVIEW'
+    gate: 'request-review Dual-Blind AND Gate'
+    topic: 'Santa Method dual-blind code review passed'
+    reason: 'Reviewer A (98%) and Reviewer B (98%) passed with 0 must-fix findings'
     status: 'accepted'

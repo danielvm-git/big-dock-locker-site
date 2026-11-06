@@ -7,8 +7,14 @@ risk: P2
 depends_on: [e01s02]
 tasks:
   - id: 1
-    description: 'Verify InstallSection clipboard state machine unit tests.'
+    description: 'RED: Clipboard state machine tests verifying idle, copying, copied, copy-error states and timer reset.'
     verify: 'npm run test -- tests/unit/InstallSection.test.ts'
     risk: P2
     security: none
-    status: done
+    status: passing
+  - id: 2
+    description: 'GREEN: Component implementation with resilient clipboard transitions and unmount cleanup in InstallSection.vue.'
+    verify: 'npm run test -- tests/unit/InstallSection.test.ts'
+    risk: P2
+    security: none
+    status: passing

@@ -7,14 +7,26 @@ risk: P1
 depends_on: [e01s02]
 tasks:
   - id: 1
-    description: 'Verify pure release machine unit tests.'
+    description: 'RED: State machine unit tests covering all lifecycle transitions and monotonic count clamping.'
     verify: 'npm run test -- tests/unit/releaseMachine.test.ts'
     risk: P1
     security: none
-    status: done
+    status: passing
   - id: 2
-    description: 'Verify useLatestRelease composable network and timeout tests.'
+    description: 'GREEN: Pure release reducer implementation in releaseMachine.ts.'
+    verify: 'npm run test -- tests/unit/releaseMachine.test.ts'
+    risk: P1
+    security: none
+    status: passing
+  - id: 3
+    description: 'RED: Composable service tests covering timeout aborts, visibility revalidation, and caching.'
     verify: 'npm run test -- tests/unit/useLatestRelease.test.ts'
     risk: P1
     security: none
-    status: done
+    status: passing
+  - id: 4
+    description: 'GREEN: useLatestRelease composable service wrapping releaseMachine with network I/O.'
+    verify: 'npm run test -- tests/unit/useLatestRelease.test.ts'
+    risk: P1
+    security: none
+    status: passing

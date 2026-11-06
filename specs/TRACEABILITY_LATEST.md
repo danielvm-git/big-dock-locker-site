@@ -1,6 +1,6 @@
 # Traceability Matrix
 
-**Generated:** 2026-11-06 15:36:59 UTC
+**Generated:** 2026-11-06 16:26:04 UTC
 **Total stories:** 6
 **Tagged stories:** 6
 **Dark stories:** 0
@@ -9,7 +9,7 @@
 
 ## Oracle Stats
 
-- **High** (explicit tag): 24
+- **High** (explicit tag): 28
 - **Medium** (file heuristic): 7
 - **Low** (task reference): 11
 
@@ -19,8 +19,8 @@
 |-------|-------|------|-----|------|--------|-------|
 | e01s01 | Static Assets and HTML Shell | e01 | 0 | 8.0 | backlog | 6 |
 | e01s02 | Global CSS Tokens and Navbar Component | e01 | 0 | 8.0 | backlog | 7 |
-| e02s01 | Pure Release State Machine & useLatestRelease Composable | e02 | 0 | 6.75 | backlog | 10 |
-| e02s02 | Install Section Clipboard State Machine | e02 | 0 | 6.75 | backlog | 8 |
+| e02s01 | Pure Release State Machine & useLatestRelease Composable | e02 | 0 | 6.75 | backlog | 11 |
+| e02s02 | Install Section Clipboard State Machine | e02 | 0 | 6.75 | backlog | 11 |
 | e03s01 | Unit and Component Test Suite | e03 | 0 | 10.5 | backlog | 6 |
 | e03s02 | Playwright E2E and CI Preflight Wiring | e03 | 0 | 10.5 | backlog | 5 |
 
