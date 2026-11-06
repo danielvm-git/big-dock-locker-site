@@ -23,6 +23,10 @@ Profile: profiles/typescript-vue.md
 | Preflight | `npm run preflight` |
 | CI        | `gh pr checks`      |
 
+`preflight` also runs `npm run check:bundle`, which fails when the critical-path
+JavaScript exceeds 60 KB gzip. Do not raise that budget to get green — move code
+behind a `import()` and record the reason in `specs/bugs/BUG-007-*.md`.
+
 ## Architecture
 
 The site is a single-page application with sections for Home, Features, Pricing, Docs, Blog, and Contact.

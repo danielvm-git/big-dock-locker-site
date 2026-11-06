@@ -26,23 +26,30 @@ Production async call sites are only two:
 | `src/composables/useLatestRelease.ts` | 30–61 | `fetch(...).then(check).then(parse).catch().finally()` |
 | `src/components/InstallSection.vue`   | 8–13  | `navigator.clipboard.writeText(...).then(setTimeout)`  |
 
-Everything else is synchronous (Vue render, Sentry calls, static markup).
+Everything else is synchronous (Vue render, static markup). Sentry is no longer a
+synchronous call site: the facade queues and the SDK itself is dynamic-imported
+(BUG-007).
 
 ---
 
 ## 2. Hot path inventory
 
-| ID   | Hot path           | Trigger                                    | Async boundary                          | Blocks first paint? | Notes                                                     |
-| ---- | ------------------ | ------------------------------------------ | --------------------------------------- | ------------------- | --------------------------------------------------------- |
-| HP-1 | Bootstrap          | `main.ts` module eval                      | none                                    | **Yes**             | `Sentry.init()` runs synchronously before `app.mount()`   |
-| HP-2 | First release load | `HeroSection` setup → `useLatestRelease()` | `fetch` + `json()`                      | No                  | Fire-and-forget; singleton guard prevents duplicate fetch |
-| HP-3 | Sibling consumers  | `DownloadSection`, `TheFooter` setup       | none                                    | No                  | `release` null + `loading` true → guard skips fetch       |
-| HP-4 | Tab regain         | `visibilitychange` listener                | `fetch` + `json()`                      | No                  | `if (loading) return` coalesces concurrent refreshes      |
-| HP-5 | Download click     | `<a @click>`                               | none                                    | No                  | Optimistic `incrementDownload` + 2 Sentry calls           |
-| HP-6 | Copy command       | `<button @click>`                          | `clipboard.writeText` then `setTimeout` | No                  | Timer not tracked/cleared                                 |
-| HP-7 | Static sections    | render                                     | none                                    | No                  | Pure markup                                               |
+| ID   | Hot path           | Trigger                                    | Async boundary                          | Blocks first paint? | Notes                                                                    |
+| ---- | ------------------ | ------------------------------------------ | --------------------------------------- | ------------------- | ------------------------------------------------------------------------ |
+| HP-1 | Bootstrap          | `main.ts` module eval                      | none                                    | **No**              | `app.mount()` first; `scheduleSentry()` defers the SDK to idle (BUG-007) |
+| HP-2 | First release load | `HeroSection` setup → `useLatestRelease()` | `fetch` + `json()`                      | No                  | Fire-and-forget; singleton guard prevents duplicate fetch                |
+| HP-3 | Sibling consumers  | `DownloadSection`, `TheFooter` setup       | none                                    | No                  | `release` null + `loading` true → guard skips fetch                      |
+| HP-4 | Tab regain         | `visibilitychange` listener                | `fetch` + `json()`                      | No                  | `if (loading) return` coalesces concurrent refreshes                     |
+| HP-5 | Download click     | `<a @click>`                               | none                                    | No                  | Optimistic `incrementDownload` + 2 queued Sentry calls                   |
+| HP-6 | Copy command       | `<button @click>`                          | `clipboard.writeText` then `setTimeout` | No                  | Timer not tracked/cleared                                                |
+| HP-7 | Static sections    | render                                     | none                                    | No                  | Pure markup                                                              |
 
-**Performance note:** HP-1 is the only synchronous hot path that delays first paint. HP-2 is correctly off the render path (not awaited in setup), so slow network does not block the hero. No N+1 requests, no request waterfall, no client-side routing.
+**Performance note:** HP-1 used to be the only synchronous hot path delaying first
+paint (`Sentry.init()` before `app.mount()`, 113 KB gzip of SDK in the entry chunk).
+Since BUG-007 the app mounts first and `scheduleSentry()` dynamic-imports the SDK in
+`requestIdleCallback`, so no hot path blocks first paint. HP-2 is correctly off the
+render path (not awaited in setup), so slow network does not block the hero. No N+1
+requests, no request waterfall, no client-side routing.
 
 ---
 
@@ -54,7 +61,7 @@ Everything else is synchronous (Vue render, Sentry calls, static markup).
 | ------------------------------------------------------ | --------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `fetch(url).then(r => r.json()).then(parse)`           | **Data-dependent**          | Body cannot be parsed before the response arrives. Rewriting as `await` changes style, not ordering. |
 | `clipboard.writeText(cmd).then(() => setTimeout(...))` | **Single async op + timer** | Not two async operations; the timer is UI feedback, not I/O.                                         |
-| `Sentry.init()` → `app.mount()`                        | **Synchronous**             | No promise involved.                                                                                 |
+| `Sentry.init()` → `app.mount()`                        | **Synchronous**             | No promise involved. Sentry is no longer awaited or ordered before mount.                            |
 | Tests: repeated `await flushPromises()`                | Test-only                   | Outside production scope.                                                                            |
 
 There are no `await a(); await b()` pairs, no independent requests that could use `Promise.all`, and no lazy imports on the hot path. The only parallelization opportunity would be adding new requests, which is out of scope.
@@ -175,7 +182,11 @@ FETCH_OK --> replace whole release (drops optimistic increments)
 
 ### SM-5 — Bootstrap / Sentry lifecycle
 
-`Sentry.init()` runs once before mount. No state transitions are modeled; failures degrade observability only. No conflict found.
+`app.mount()` runs first. `scheduleSentry()` queues the SDK load on
+`requestIdleCallback` (timer fallback), so the facade has two states — queued and
+loaded — and events raised while queued are replayed on load. `initSentry()` never
+rejects: a blocked or failed SDK degrades observability only and cannot reach the
+render path (BUG-007). No conflict found.
 
 ### Static sections
 
