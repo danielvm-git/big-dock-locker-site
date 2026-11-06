@@ -17,6 +17,21 @@ Read [CLAUDE.md](CLAUDE.md), [CONVENTIONS.md](CONVENTIONS.md), [specs/state.yaml
 | Preflight | `npm run preflight` |
 | CI        | `gh pr checks`      |
 
+## Bundle Budget
+
+`preflight` ends with `npm run check:bundle`, which measures the critical path read
+from `dist/index.html` (entry module, `modulepreload` links, render-blocking CSS)
+and fails above **60 KB gzip JS / 10 KB CSS**. It guards the vision criterion
+"site loads under 1 second with static assets and minimal bundle size"
+(BUG-007).
+
+- Do not raise the budget to get green. Move code behind a dynamic `import()`.
+- Anything imported eagerly by `src/main.ts` or a section component is on the
+  critical path. Observability, analytics and optional UI go through a lazy
+  facade (see `src/observability/sentry.ts`).
+- `tests/unit/bundleBudget.test.ts` fails if the gate is removed from
+  `preflight`, mirroring the BUG-003 wiring guard.
+
 ## Stack Conventions (profiles/typescript-vue.md)
 
 - Use Vue 3 Composition API with `<script setup>`.
