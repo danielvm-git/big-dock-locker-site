@@ -1,7 +1,7 @@
 # bigpowers state tracking
 bigpowers_version: '2.11.0'
-active_flow: 'build_epic'
-active_epic: 'e02-live-releases'
+active_flow: 'survey-context'
+active_epic: null
 workflow_mode: 'solo-git'
 
 project_cycle:
@@ -9,30 +9,22 @@ project_cycle:
   completed_phases: [1, 2, 3]
   phase_name: 'build'
 
-epic_cycle:
-  epic_id: 'e02'
-  active_story_id: null
-  current_step: 8
-  story_bcps: 6
-  epic_status: 'done'
-  completed_steps: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+epic_cycle: null
 
 handoff:
-  last_step_completed: 'respond-review'
-  next_skill: 'release-branch'
-  open_decisions:
-    - 'Awaiting user decision at release-branch gate: approve PR / merge for feat/e02-live-releases'
+  last_step_completed: 'release-branch'
+  next_skill: 'survey-context'
+  open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'
-    - 'specs/epics/e02-live-releases/epic.yaml'
-    - 'specs/verifications/REVIEW-e02.md'
+    - 'specs/execution-status.yaml'
 
 git:
-  branch: 'feat/e02-live-releases'
+  branch: 'main'
   clean: true
 
 metrics:
-  story_start: '2026-11-06T13:03:00Z'
+  story_start: null
   bcp_baseline: 14
 
 decisions:
@@ -60,4 +52,9 @@ decisions:
     gate: 'request-review Dual-Blind AND Gate'
     topic: 'Santa Method dual-blind code review passed'
     reason: 'Reviewer A (98%) and Reviewer B (98%) passed with 0 must-fix findings'
+    status: 'accepted'
+  - id: 'DEC-E02-RELEASE'
+    gate: 'release-branch Gate'
+    topic: 'Epic e02 released and merged to main'
+    reason: 'Preflight green, tests verified, dual-blind review approved, landed on main via land-branch.sh'
     status: 'accepted'
