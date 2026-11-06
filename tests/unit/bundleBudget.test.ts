@@ -40,7 +40,7 @@ describe('the critical-path payload is computed from dist/index.html', () => {
       JS_BUDGET_KB: number
     }
 
-  it('counts the entry module and every modulepreload, and nothing else', async () => {
+  it('counts the entry module, its modulepreloads and the render-blocking CSS', async () => {
     const { initialAssetUrls } = await load()
     const html = [
       '<script type="module" crossorigin src="/assets/index-abc.js"></script>',
@@ -49,7 +49,11 @@ describe('the critical-path payload is computed from dist/index.html', () => {
       '<link rel="icon" type="image/png" href="/icon.png">',
     ].join('\n')
 
-    expect(initialAssetUrls(html)).toEqual(['/assets/index-abc.js', '/assets/vendor-def.js'])
+    expect(initialAssetUrls(html)).toEqual([
+      '/assets/index-abc.js',
+      '/assets/vendor-def.js',
+      '/assets/index-ghi.css',
+    ])
   })
 
   it('ignores dynamically imported chunks that are not preloaded', async () => {
