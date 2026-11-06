@@ -90,6 +90,12 @@
 
 - add Sentry observability — page tracing, session replay, download tracking ([69dcc5a](https://github.com/danielvm-git/big-dock-locker-site/commit/69dcc5ac661f4878eda7f5fa6372c3ed7f577882))
 
+## [1.6.1] - 2026-11-06
+
+### Bug Fixes
+
+- **ci:** close historical gaps and repair stale state ([914828b](https://github.com/danielvm-git/big-dock-locker-site/commit/914828b95d588f7c7520bd3f2a7e858c21ba2316))
+
 ## [1.0.2](https://github.com/danielvm-git/big-dock-locker-site/compare/v1.0.1...v1.0.2) (2026-05-21)
 
 ### Bug Fixes
