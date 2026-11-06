@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- big-release managed -->
 
+## [1.6.2] - 2026-11-06
+
+### Bug Fixes
+
+- **release:** make the changelog insert newest-first ([46262b2](https://github.com/danielvm-git/big-dock-locker-site/commit/46262b2b8ed096f788be1f27f92526c499313b4d))
+
 ## [1.6.1] - 2026-11-06
 
 ### Bug Fixes
