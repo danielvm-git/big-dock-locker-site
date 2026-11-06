@@ -88,8 +88,21 @@ for epic in d.get('epics') or []:
     if not isinstance(epic, dict):
         continue
     f = epic.get('file')
-    if f and not os.path.isfile(os.path.join(specs, f)):
-        print(os.path.join(specs, f))
+    if not f:
+        continue
+    if os.path.isfile(os.path.join(specs, f)):
+        continue
+    # land-branch.sh moves completed capsules to specs/epics/archive/ while
+    # release-plan.yaml keeps the original capsule_dir, so a finished epic's
+    # file reference legitimately points at the pre-archive path (BUG-006's
+    # archive-fallback class). Resolve the archived copy before reporting.
+    capsule = epic.get('capsule_dir') or os.path.dirname(f)
+    archived = os.path.join(
+        specs, 'epics', 'archive', os.path.basename(capsule.rstrip('/')), 'epic.yaml'
+    )
+    if os.path.isfile(archived):
+        continue
+    print(os.path.join(specs, f))
 " "$SPECS")"
   if [[ -n "$missing_files" ]]; then
     while IFS= read -r path; do
