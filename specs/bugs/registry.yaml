@@ -86,7 +86,8 @@ bugs:
     title: 'Deployment is invisible to CI — no post-deploy smoke check on the live site'
     severity: high
     scope: ci
-    status: open
+    status: blocked
+    blocked_by: BUG-012
     file: specs/bugs/BUG-008-no-post-deploy-smoke-check.md
     found: '2026-11-06'
     issue: 14
@@ -128,6 +129,42 @@ bugs:
     affected:
       - specs/adr/0006-split-pair-workflow-templates.md
     verify: 'decision record exists and the issue is closed with the reason'
+  - id: BUG-011
+    title: 'validate-specs-yaml.sh fails on archived epic capsules and resolves them as missing'
+    severity: medium
+    scope: tooling
+    status: fixed
+    file: specs/bugs/registry.yaml
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - scripts/validate-specs-yaml.sh
+    evidence: 'Same archive-fallback class as BUG-006: `bash scripts/validate-specs-yaml.sh` exited 1 on main with "release-plan: missing epic file specs/epics/e01-…/epic.yaml" for all three archived epics. Now resolves specs/epics/archive/<capsule>/epic.yaml and exits 0 ("validate-specs-yaml: OK").'
+  - id: BUG-012
+    title: 'Netlify never deploys — no webhook and no build hook, live site frozen since 2026-05-21'
+    severity: critical
+    scope: infra
+    status: open
+    file: specs/bugs/BUG-008-no-post-deploy-smoke-check.md
+    found: '2026-11-06'
+    issue: 14
+    blocked_action: 'owner must re-link the Netlify GitHub integration or install a build hook / deploy token'
+    affected:
+      - netlify.toml
+      - .github/workflows/ (no deploy job)
+    evidence: 'listSiteDeploys: 5 deploys, newest 2026-05-21T18:40Z @ 77d72ae. Repo hooks: Snyk only. getSite: installation_id=null, deploy_key_id=null. listHooksBySiteId: email hooks only, no build hook. After PR #17 merged, the live site still served index-COMqoqnk.js and the 4.1 MB icon.png.'
+  - id: BUG-013
+    title: 'Python bytecode committed to git — 28 .pyc files tracked, __pycache__ not ignored'
+    severity: low
+    scope: hygiene
+    status: fixed
+    file: specs/bugs/registry.yaml
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - .gitignore
+      - scripts/lib/__pycache__/
+    evidence: 'git ls-files | grep -c \.pyc → 28 before, 0 after; every python-script run dirtied the tree. .gitignore now ignores __pycache__/ and *.pyc.'
 archived:
   - id: BUG-001
     title: 'Release workflow red on every push to main — husky hooks are not POSIX'
