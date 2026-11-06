@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- big-release managed -->
 
+## [1.6.5] - 2026-11-06
+
+### Bug Fixes
+
+- **ci:** re-vendor trace-stories with the upstream status fix ([#19](https://github.com/danielvm-git/big-dock-locker-site/issues/19)) ([bcaaf65](https://github.com/danielvm-git/big-dock-locker-site/commit/bcaaf65c02e28d5503ccc3b191c34a258b5ea968))
+
 ## [1.6.4] - 2026-11-06
 
 ### Changed
