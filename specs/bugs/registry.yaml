@@ -1,4 +1,15 @@
 # Defect & Bug Registry
 version: '1.0.0'
-bugs: []
+bugs:
+  - id: BUG-001
+    title: 'Release workflow red on every push to main — pre-push hook is bash-only'
+    severity: high
+    scope: ci
+    status: in-progress
+    file: specs/bugs/BUG-001-pre-push-hook-dash-syntax.md
+    found: '2026-11-06'
+    source: 'gh run list — Release workflow failure on 5/5 pushes to main'
+    affected:
+      - .husky/pre-push
+      - .github/workflows/release.yml
 archived: []

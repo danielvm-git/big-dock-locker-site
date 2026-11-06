@@ -49,3 +49,9 @@ jobs:
         run: big-release release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The release workflow is a sanctioned main-pusher (CONVENTIONS:
+          # "Never commit directly to main outside release scripts").
+          # big-release pushes the tag and then the release commit, which the
+          # pre-push guard would otherwise block. Same escape hatch as
+          # scripts/land-branch.sh.
+          GIT_BIGPOWERS_LAND: '1'
