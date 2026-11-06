@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import * as Sentry from '@sentry/vue'
+import { addBreadcrumb, captureMessage } from '../observability/sentry'
 import { useLatestRelease } from '../composables/useLatestRelease'
 
 const FALLBACK = 'https://github.com/danielvm-git/big-dock-locker/releases/latest'
@@ -7,13 +7,13 @@ const { release, loading, error, incrementDownload } = useLatestRelease()
 
 function trackDownload(arch: 'apple-silicon' | 'intel') {
   incrementDownload(arch)
-  Sentry.addBreadcrumb({
+  addBreadcrumb({
     category: 'download',
     message: `download_clicked`,
     level: 'info',
     data: { arch, version: release.value?.tag ?? 'unknown', source: 'hero' },
   })
-  Sentry.captureMessage(`download_clicked:${arch}`, {
+  captureMessage(`download_clicked:${arch}`, {
     level: 'info',
     tags: { arch, version: release.value?.tag ?? 'unknown', source: 'hero' },
   })
@@ -66,7 +66,13 @@ function trackDownload(arch: 'apple-silicon' | 'intel') {
         </p>
       </div>
       <div class="hero-screenshot">
-        <img src="/dashboard.png" alt="Big DockLocker dashboard" class="hero-img" />
+        <img
+          src="/dashboard.png"
+          alt="Big DockLocker dashboard"
+          class="hero-img"
+          width="892"
+          height="1058"
+        />
       </div>
     </div>
   </section>

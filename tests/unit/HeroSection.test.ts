@@ -5,7 +5,7 @@ import { useLatestRelease } from '../../src/composables/useLatestRelease'
 import { RELEASE_FIXTURE, makeMockReturn } from './fixtures'
 
 vi.mock('../../src/composables/useLatestRelease')
-vi.mock('@sentry/vue', () => ({
+vi.mock('../../src/observability/sentry', () => ({
   addBreadcrumb: vi.fn(),
   captureMessage: vi.fn(),
 }))
