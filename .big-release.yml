@@ -23,6 +23,11 @@ pluginConfigs:
   git:
     postTagAssets:
       - VERSION
+      # The changelog plugin writes CHANGELOG.md during Prepare(), but only the
+      # files listed here are committed. Without this entry every generated
+      # changelog was written into the runner workspace and discarded, leaving
+      # the checked-in file frozen at 1.0.0 while VERSION moved on (BUG-005).
+      - CHANGELOG.md
 
 # Commit type sections in changelog
 commitTypes:

@@ -1,3 +1,54 @@
+# 1.6.0 (2026-11-06)
+
+### Features
+
+- **e02:** live github releases and install section ([075f417](https://github.com/danielvm-git/big-dock-locker-site/commit/075f4173846512c14291a205aed4abce621c88a6))
+- **e01s02:** complete css tokens and navbar component ([d76663d](https://github.com/danielvm-git/big-dock-locker-site/commit/d76663dcaa5b28c81b4e4f96266b6492c8f73d43))
+- **e01s01:** verify static assets and html shell ([e99fc16](https://github.com/danielvm-git/big-dock-locker-site/commit/e99fc16eb7d1d0a84138b62ae0be4df9b2ee150e))
+
+### Bug Fixes
+
+- **ci:** make commit-msg hook POSIX so releases can commit ([44c2e27](https://github.com/danielvm-git/big-dock-locker-site/commit/44c2e27a306a734c35dde57c063fac971cddb612))
+- **ci:** make pre-push hook POSIX and exempt the release workflow ([e18b3ab](https://github.com/danielvm-git/big-dock-locker-site/commit/e18b3ab1154c37bcd861207ffd0c8dbb64fec41d))
+
+# 1.5.3 (2026-11-04)
+
+### Bug Fixes
+
+- **release:** use top-level versionFile config ([039f904](https://github.com/danielvm-git/big-dock-locker-site/commit/039f904de9ef39c05cdb68a91005ecb0be348826))
+
+# 1.5.2 (2026-11-04)
+
+### Bug Fixes
+
+- **ci:** use native big-release versionfile plugin ([26b46c5](https://github.com/danielvm-git/big-dock-locker-site/commit/26b46c527aba10055202f9ac43e0729ce90a561a))
+
+# 1.5.1 (2026-11-04)
+
+### Bug Fixes
+
+- **ci:** sync VERSION file after releases ([e521586](https://github.com/danielvm-git/big-dock-locker-site/commit/e521586297d1165deae01a0260fd5d2a27658c39))
+
+# 1.5.0 (2026-11-04)
+
+### Features
+
+- **release:** add .big-release.yml configuration ([7815c39](https://github.com/danielvm-git/big-dock-locker-site/commit/7815c39cd16e44772c0ea301b43fe12f2ebe18cc))
+- **feat:** optimistic download counter increment and refetch on tab focus ([c1d4636](https://github.com/danielvm-git/big-dock-locker-site/commit/c1d46364bf3538314d5f7b5877e574c8c7d5f424))
+- **feat:** show GitHub release download counts on hero and download section ([9ff440e](https://github.com/danielvm-git/big-dock-locker-site/commit/9ff440e8506938ae96dd97e35cbcd266d658b660))
+- **feat:** add Sentry release pipeline — source maps, commit association, deploy notification ([8da1985](https://github.com/danielvm-git/big-dock-locker-site/commit/8da19859dcecb276db9d495e671b96776b18420c))
+- **feat:** add Sentry release health — release tag and environment injected at build time ([a245be3](https://github.com/danielvm-git/big-dock-locker-site/commit/a245be391c2db00ad5dd7ecf127e1c97cb2dd533))
+- **feat:** add Sentry observability — page tracing, session replay, download tracking ([9e24260](https://github.com/danielvm-git/big-dock-locker-site/commit/9e24260380b0c1a76b97b7ef270ad352d754da84))
+- **feat:** launch Big DockLocker marketing website - Seven-section SPA: Navbar, Hero, Features, HowItWorks, Install, Download, Footer - Live download buttons and version badge via GitHub Releases API (singleton composable) - Semantic-release wired with GitHub Actions on main branch - Responsive, dark-mode ready, no external UI dependencies ([8067724](https://github.com/danielvm-git/big-dock-locker-site/commit/80677247c9de91d70e0da77710dee1089b8b884c))
+
+### Bug Fixes
+
+- **ci:** configure git identity for big-release ([#5](https://github.com/danielvm-git/big-dock-locker-site/issues/5)) ([8bc36c4](https://github.com/danielvm-git/big-dock-locker-site/commit/8bc36c4f182d1b2bb74f09394cbe8a22034c4ea1))
+- **ci:** invoke big-release release subcommand ([#4](https://github.com/danielvm-git/big-dock-locker-site/issues/4)) ([51992ec](https://github.com/danielvm-git/big-dock-locker-site/commit/51992ec68d1e057197fb6cb5f74f877229c6b886))
+- **fix:** harden release and clipboard state machines, update CI actions ([#3](https://github.com/danielvm-git/big-dock-locker-site/issues/3)) ([63f2967](https://github.com/danielvm-git/big-dock-locker-site/commit/63f2967a50be10f6244f295a7ab122984291356b))
+- **fix:** correct Netlify domain in OG meta tags ([bd016ce](https://github.com/danielvm-git/big-dock-locker-site/commit/bd016ced57ffdd48f8882701a025d9dd8433f178))
+- **fix:** use dashboard screenshot for social media preview image ([524c210](https://github.com/danielvm-git/big-dock-locker-site/commit/524c2108a3b98dd7221412eb59e50008d5342fed))
+
 # 1.0.0 (2026-08-03)
 
 ### Bug Fixes

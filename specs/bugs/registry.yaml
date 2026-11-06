@@ -1,6 +1,65 @@
 # Defect & Bug Registry
 version: '1.0.0'
-bugs: []
+bugs:
+  - id: BUG-002
+    title: 'execution-status.yaml contradicts release-plan.yaml — e03 stories pending but done'
+    severity: medium
+    scope: specs
+    status: fixed
+    file: specs/HISTORICAL-GAPS-CLOSED.md
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - specs/execution-status.yaml
+      - specs/epics/archive/e03-test-and-ci-hygiene
+    evidence: 'release-plan.yaml + epic.yaml + code tags all said done; execution-status.yaml said pending; e03 capsule unarchived'
+  - id: BUG-003
+    title: 'Playwright E2E suite never ran in CI despite e03s02 "CI Preflight Wiring"'
+    severity: high
+    scope: ci
+    status: fixed
+    file: specs/HISTORICAL-GAPS-CLOSED.md
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - .github/workflows/ci.yml
+      - package.json
+    regression_test: tests/unit/ciWiring.test.ts
+  - id: BUG-004
+    title: 'land-branch.sh cannot delete a squash-merged branch, leaving stale branches'
+    severity: low
+    scope: tooling
+    status: fixed
+    file: specs/HISTORICAL-GAPS-CLOSED.md
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - scripts/land-branch.sh
+    evidence: 'observed twice: WARN Could not delete branch after squash merge'
+  - id: BUG-005
+    title: 'CHANGELOG.md frozen at 1.0.0 — generated changelog never committed'
+    severity: medium
+    scope: release
+    status: fixed
+    file: specs/HISTORICAL-GAPS-CLOSED.md
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - .big-release.yml
+      - CHANGELOG.md
+    evidence: 'release commit b19fb56 touched only VERSION; postTagAssets listed VERSION alone'
+  - id: BUG-006
+    title: 'trace-stories.py strict gate was vacuous — wrong status key and no archive fallback'
+    severity: high
+    scope: tooling
+    status: fixed
+    file: specs/HISTORICAL-GAPS-CLOSED.md
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    affected:
+      - scripts/lib/trace-stories.py
+    evidence: 'dev_status read from development_status, so all stories resolved to backlog and --strict skipped them; MIN_STORY_BASELINE was 1'
+    upstream_note: 'danielvm-git/bigpowers scripts/lib/trace-stories.py has the same wrong-key defect'
 archived:
   - id: BUG-001
     title: 'Release workflow red on every push to main — husky hooks are not POSIX'

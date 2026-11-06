@@ -1,7 +1,265 @@
 {
-  "generated_at": "2026-11-06T16:30:12.364252+00:00",
+  "generated_at": "2026-11-06T17:13:26.650902+00:00",
   "matrix_version": "1.0",
   "stories": [
+    {
+      "id": "e01s01",
+      "title": "Static Assets and HTML Shell",
+      "epic_id": "e01",
+      "epic_title": "Site Foundation, Layout, and Assets",
+      "bcp": 0,
+      "wsjf": 8.0,
+      "status": "done",
+      "links": [
+        {
+          "file": "specs/verifications/AUDIT-e01-e01s01.md",
+          "line": 10,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/e01s01-static-assets.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/epic.yaml",
+          "line": 20,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/adr/0003-static-hosting-and-ci-cd.md",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/e01s01-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/e01s02-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 6
+    },
+    {
+      "id": "e01s02",
+      "title": "Global CSS Tokens and Navbar Component",
+      "epic_id": "e01",
+      "epic_title": "Site Foundation, Layout, and Assets",
+      "bcp": 0,
+      "wsjf": 8.0,
+      "status": "done",
+      "links": [
+        {
+          "file": "specs/verifications/AUDIT-e01-e01s02.md",
+          "line": 11,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/e01s02-site-layout-navbar.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/epic.yaml",
+          "line": 32,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "tests/unit/TheNavbar.test.ts",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s01-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s02-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        },
+        {
+          "file": "specs/epics/archive/e01-site-foundation/e01s02-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 7
+    },
+    {
+      "id": "e02s01",
+      "title": "Pure Release State Machine & useLatestRelease Composable",
+      "epic_id": "e02",
+      "epic_title": "Live GitHub Releases & Interactive Machines",
+      "bcp": 0,
+      "wsjf": 6.75,
+      "status": "done",
+      "links": [
+        {
+          "file": "specs/verifications/AUDIT-e02-e02s01.md",
+          "line": 11,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s01-release-state-machine.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/epic.yaml",
+          "line": 21,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "tests/unit/releaseMachine.test.ts",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "tests/unit/useLatestRelease.test.ts",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "src/composables/useLatestRelease.ts",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "src/machines/releaseMachine.ts",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/HOT-PATH-AND-STATE-MACHINE-AUDIT.md",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "specs/adr/0002-github-releases-api-state-machine.md",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/e03s01-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s01-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 11
+    },
+    {
+      "id": "e02s02",
+      "title": "Install Section Clipboard State Machine",
+      "epic_id": "e02",
+      "epic_title": "Live GitHub Releases & Interactive Machines",
+      "bcp": 0,
+      "wsjf": 6.75,
+      "status": "done",
+      "links": [
+        {
+          "file": "specs/verifications/AUDIT-e02.md",
+          "line": 25,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/verifications/AUDIT-e02-e02s02.md",
+          "line": 10,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/AUDIT_LATEST.md",
+          "line": 25,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/epic.yaml",
+          "line": 32,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s02-install-clipboard-machine.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "tests/unit/InstallSection.test.ts",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/HOT-PATH-AND-STATE-MACHINE-AUDIT.md",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "specs/adr/0002-github-releases-api-state-machine.md",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s01-release-state-machine.md",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "src/components/InstallSection.vue",
+          "line": 0,
+          "confidence": "medium",
+          "method": "file_heuristic"
+        },
+        {
+          "file": "specs/epics/archive/e02-live-releases/e02s02-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 11
+    },
     {
       "id": "e03s01",
       "title": "Unit and Component Test Suite",
@@ -9,16 +267,16 @@
       "epic_title": "Testing Pyramid and CI Preflight Gates",
       "bcp": 0,
       "wsjf": 10.5,
-      "status": "backlog",
+      "status": "done",
       "links": [
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/epic.yaml",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/epic.yaml",
           "line": 19,
           "confidence": "high",
           "method": "explicit_tag"
         },
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/e03s01-unit-component-tests.md",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/e03s01-unit-component-tests.md",
           "line": 1,
           "confidence": "high",
           "method": "explicit_tag"
@@ -36,13 +294,13 @@
           "method": "explicit_tag"
         },
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/e03s02-tasks.yaml",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/e03s02-tasks.yaml",
           "line": 0,
           "confidence": "low",
           "method": "task_reference"
         },
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/e03s01-tasks.yaml",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/e03s01-tasks.yaml",
           "line": 0,
           "confidence": "low",
           "method": "task_reference"
@@ -57,16 +315,16 @@
       "epic_title": "Testing Pyramid and CI Preflight Gates",
       "bcp": 0,
       "wsjf": 10.5,
-      "status": "backlog",
+      "status": "done",
       "links": [
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/e03s02-playwright-ci-preflight.md",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/e03s02-playwright-ci-preflight.md",
           "line": 1,
           "confidence": "high",
           "method": "explicit_tag"
         },
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/epic.yaml",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/epic.yaml",
           "line": 31,
           "confidence": "high",
           "method": "explicit_tag"
@@ -78,31 +336,33 @@
           "method": "explicit_tag"
         },
         {
+          "file": ".github/workflows/ci.yml",
+          "line": 34,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
           "file": "playwright.config.ts",
           "line": 1,
           "confidence": "high",
           "method": "explicit_tag"
         },
         {
-          "file": "specs/epics/e03-test-and-ci-hygiene/e03s02-tasks.yaml",
+          "file": "specs/epics/archive/e03-test-and-ci-hygiene/e03s02-tasks.yaml",
           "line": 0,
           "confidence": "low",
           "method": "task_reference"
         }
       ],
-      "link_count": 5
+      "link_count": 6
     }
   ],
   "summary": {
-    "total_stories": 2,
-    "tagged_stories": 2,
+    "total_stories": 6,
+    "tagged_stories": 6,
     "dark_stories": [],
     "dark_count": 0,
     "orphan_tags": [
-      "e01s01",
-      "e01s02",
-      "e02s01",
-      "e02s02",
       "e13s03",
       "e28s01",
       "e31s04",
@@ -150,13 +410,20 @@
       "e79s02",
       "e82s01"
     ],
-    "orphan_count": 50,
-    "stale_tags": [],
-    "stale_count": 0,
+    "orphan_count": 46,
+    "stale_tags": [
+      "e01s01",
+      "e01s02",
+      "e02s01",
+      "e02s02",
+      "e03s01",
+      "e03s02"
+    ],
+    "stale_count": 6,
     "oracle_stats": {
-      "high": 8,
-      "medium": 0,
-      "low": 3
+      "high": 29,
+      "medium": 7,
+      "low": 11
     }
   }
 }

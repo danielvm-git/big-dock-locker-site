@@ -205,8 +205,12 @@ fi
 git worktree prune 2>/dev/null || true
 
 if git show-ref --verify --quiet "refs/heads/$FEATURE_BRANCH"; then
-  git branch -d "$FEATURE_BRANCH" 2>/dev/null || {
-    echo "WARN: Could not delete branch $FEATURE_BRANCH (not fully merged? use -D manually if intended)"
+  # `git branch -d` refuses a squash-merged branch: the squash commit is a new
+  # commit, never an ancestor of the feature tip. Since the squash commit above
+  # already carries the branch content and was verified non-empty, force the
+  # delete instead of warning and leaving a stale branch behind every landing.
+  git branch -D "$FEATURE_BRANCH" >/dev/null 2>&1 || {
+    echo "WARN: Could not delete branch $FEATURE_BRANCH"
   }
 fi
 

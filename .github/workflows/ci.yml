@@ -30,3 +30,29 @@ jobs:
 
       - name: Preflight (typecheck + test + lint + build)
         run: npm run preflight
+
+  # story: e03s02 — the Playwright suite is part of the CI contract. `preflight`
+  # does not include it, so without this job the browser flow had no gate.
+  e2e:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # playwright.config.ts serves `npm run preview`, which needs dist/.
+      - name: Build
+        run: npm run build
+
+      - name: Playwright E2E
+        run: npm run test:e2e

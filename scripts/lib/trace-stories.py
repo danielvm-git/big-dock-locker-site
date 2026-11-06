@@ -26,7 +26,7 @@ STRICT = int(sys.argv[5])
 MODE = sys.argv[6]
 
 # --- 1. Parse YAML files → story inventory
-_MIN_STORY_BASELINE = int(os.environ.get("MIN_STORY_BASELINE", "1"))  # floor assertion: --strict FAILs if story count drops below this
+_MIN_STORY_BASELINE = int(os.environ.get("MIN_STORY_BASELINE", "6"))  # floor assertion: --strict FAILs if story count drops below this
 _STRICT_UNIMPLEMENTED_STATUSES = frozenset({"backlog", "todo", "planned"})
 
 def _load_yaml(path: Path) -> dict:
@@ -40,7 +40,13 @@ def _load_yaml(path: Path) -> dict:
 
 release = _load_yaml(ROOT / "specs" / "release-plan.yaml")
 exec_status = _load_yaml(ROOT / "specs" / "execution-status.yaml")
-dev_status = exec_status.get("development_status", {})
+# Story status lives under `stories:`; `development_status:` only holds phase
+# metadata. Reading the wrong key made every story resolve to "backlog", which
+# in turn made --strict skip all of them as unimplemented — the gate reported
+# success while checking nothing.
+dev_status = exec_status.get("stories", {})
+if not isinstance(dev_status, dict):
+    dev_status = {}
 
 # --- 2. Build story inventory
 stories: dict[str, dict] = {}
@@ -55,6 +61,14 @@ for epic in epics:
     capsule_dir = epic.get("capsule_dir", "")
     if capsule_dir:
         capsule_path = ROOT / "specs" / capsule_dir / "epic.yaml"
+        # land-branch.sh moves completed capsules to specs/epics/archive/ while
+        # release-plan.yaml keeps the original capsule_dir. Without this
+        # fallback every archived epic silently drops its stories, and --strict
+        # then passes on a degenerate, near-empty matrix.
+        if not capsule_path.exists():
+            archived = ROOT / "specs" / "epics" / "archive" / Path(capsule_dir).name / "epic.yaml"
+            if archived.exists():
+                capsule_path = archived
         if capsule_path.exists():
             cap = _load_yaml(capsule_path)
             for s in cap.get("stories", []) or []:
@@ -145,11 +159,21 @@ def find_task_references(story_id: str) -> list[dict]:
         except Exception: pass
     return refs
 
+def story_status(sid: str) -> str:
+    """Status string for a story id from execution-status.yaml `stories:`."""
+    entry = dev_status.get(sid)
+    if isinstance(entry, dict):
+        return entry.get("status", "backlog")
+    if isinstance(entry, str):
+        return entry
+    return "backlog"
+
+
 matrix_stories = []
 dark_stories = []
 for sid, sinfo in sorted(stories.items()):
     links = []
-    sid_status = dev_status.get(sid, "backlog")
+    sid_status = story_status(sid)
     if sid in tag_index:
         for t in tag_index[sid]:
             links.append({"file": t["file"], "line": t["line"], "confidence": "high", "method": "explicit_tag"})
@@ -170,7 +194,7 @@ for sid, sinfo in sorted(stories.items()):
         dark_stories.append(sid)
 
 orphan_tags = [sid for sid in sorted(tagged_sids) if sid not in stories]
-stale_tags = [sid for sid in sorted(tagged_sids) if sid in stories and dev_status.get(sid) == "done"]
+stale_tags = [sid for sid in sorted(tagged_sids) if sid in stories and story_status(sid) == "done"]
 
 # --- 5. Emit matrix JSON
 matrix = {
@@ -215,7 +239,7 @@ if dark_stories:
     lines.append("## Dark Stories (no code links)\n")
     for ds in dark_stories:
         si = stories.get(ds, {})
-        lines.append(f"- **{ds}**: {si.get('title', 'Unknown')} (status: {dev_status.get(ds, '?')})")
+        lines.append(f"- **{ds}**: {si.get('title', 'Unknown')} (status: {story_status(ds)})")
     lines.append("")
 if orphan_tags:
     lines.append("## Orphan Tags (tag in code, no matching story)\n")

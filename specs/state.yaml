@@ -1,8 +1,14 @@
 # bigpowers state tracking
 bigpowers_version: '2.11.0'
-active_flow: 'survey-context'
+active_flow: 'fix_bug'
 active_epic: null
 workflow_mode: 'solo-git'
+
+bug_cycle:
+  bug_id: 'BUG-002'
+  current_step: 3
+  completed_steps: [1, 2]
+  batch: ['BUG-002', 'BUG-003', 'BUG-004', 'BUG-005']
 
 project_cycle:
   current_phase: 4
@@ -12,8 +18,8 @@ project_cycle:
 epic_cycle: null
 
 handoff:
-  last_step_completed: 'release-branch'
-  next_skill: 'survey-context'
+  last_step_completed: 'diagnose-root'
+  next_skill: 'develop-tdd'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'

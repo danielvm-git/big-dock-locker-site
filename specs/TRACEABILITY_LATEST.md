@@ -1,31 +1,31 @@
 # Traceability Matrix
 
-**Generated:** 2026-11-06 16:30:12 UTC
-**Total stories:** 2
-**Tagged stories:** 2
+**Generated:** 2026-11-06 17:13:26 UTC
+**Total stories:** 6
+**Tagged stories:** 6
 **Dark stories:** 0
-**Orphan tags:** 50
-**Stale tags:** 0
+**Orphan tags:** 46
+**Stale tags:** 6
 
 ## Oracle Stats
 
-- **High** (explicit tag): 8
-- **Medium** (file heuristic): 0
-- **Low** (task reference): 3
+- **High** (explicit tag): 29
+- **Medium** (file heuristic): 7
+- **Low** (task reference): 11
 
 ## Story Coverage
 
 | Story | Title | Epic | BCP | WSJF | Status | Links |
 |-------|-------|------|-----|------|--------|-------|
-| e03s01 | Unit and Component Test Suite | e03 | 0 | 10.5 | backlog | 6 |
-| e03s02 | Playwright E2E and CI Preflight Wiring | e03 | 0 | 10.5 | backlog | 5 |
+| e01s01 | Static Assets and HTML Shell | e01 | 0 | 8.0 | done | 6 |
+| e01s02 | Global CSS Tokens and Navbar Component | e01 | 0 | 8.0 | done | 7 |
+| e02s01 | Pure Release State Machine & useLatestRelease Composable | e02 | 0 | 6.75 | done | 11 |
+| e02s02 | Install Section Clipboard State Machine | e02 | 0 | 6.75 | done | 11 |
+| e03s01 | Unit and Component Test Suite | e03 | 0 | 10.5 | done | 6 |
+| e03s02 | Playwright E2E and CI Preflight Wiring | e03 | 0 | 10.5 | done | 6 |
 
 ## Orphan Tags (tag in code, no matching story)
 
-- `e01s01`
-- `e01s02`
-- `e02s01`
-- `e02s02`
 - `e13s03`
 - `e28s01`
 - `e31s04`
@@ -72,3 +72,12 @@
 - `e76s02`
 - `e79s02`
 - `e82s01`
+
+## Stale Tags (story done, tag still in code)
+
+- `e01s01`
+- `e01s02`
+- `e02s01`
+- `e02s02`
+- `e03s01`
+- `e03s02`
