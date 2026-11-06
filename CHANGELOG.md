@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- big-release managed -->
 
+## [1.6.3] - 2026-11-06
+
+### Bug Fixes
+
+- **ci:** run the e2e job in the Playwright image ([23c1cbc](https://github.com/danielvm-git/big-dock-locker-site/commit/23c1cbc59e5c57037bb67ed0fafa29562a40b30e))
+
 ## [1.6.2] - 2026-11-06
 
 ### Bug Fixes
