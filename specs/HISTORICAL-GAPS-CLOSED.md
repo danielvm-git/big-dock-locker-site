@@ -75,6 +75,25 @@ release commit touched `VERSION` alone (verified on `b19fb56`).
 Fixed: `CHANGELOG.md` added to `postTagAssets`, and the missing `1.5.0`–`1.6.0`
 entries backfilled from the published GitHub releases (no invented content).
 
+**Second defect found once the first was fixed.** The v1.6.1 release commit did
+include `CHANGELOG.md` — the fix works — but the plugin appended the new
+section at the **bottom** of the file, producing out-of-order history. Root
+cause: `insertReleaseSection` (`internal/plugins/changelog.go`) inserts after
+the `<!-- big-release managed -->` marker, or before `## [Unreleased]`, and
+otherwise falls through to appending. The checked-in file had neither, and
+starts with an H1, so it hit the append branch.
+
+Fixed: `CHANGELOG.md` now carries the canonical header
+(`# Changelog` → `## [Unreleased]` → `<!-- big-release managed -->`) that
+big-release expects, and the misplaced `1.6.1` section was moved under the
+marker. Future releases insert newest-first without further intervention.
+
+**Known cosmetic artefact (left in place deliberately):** the file contains two
+`1.0.0` sections. The one dated 2026-08-03 duplicates the v1.5.0 content (same
+Sentry commits) and was mislabelled by the semantic-release setup that preceded
+big-release. It is retained rather than deleted, because removing historical
+changelog content is a provenance decision, not a defect fix.
+
 ---
 
 ## 3. Gaps found during this audit (not previously filed)

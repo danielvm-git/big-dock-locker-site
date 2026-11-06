@@ -1,14 +1,8 @@
 # bigpowers state tracking
 bigpowers_version: '2.11.0'
-active_flow: 'fix_bug'
+active_flow: 'survey-context'
 active_epic: null
 workflow_mode: 'solo-git'
-
-bug_cycle:
-  bug_id: 'BUG-002'
-  current_step: 3
-  completed_steps: [1, 2]
-  batch: ['BUG-002', 'BUG-003', 'BUG-004', 'BUG-005']
 
 project_cycle:
   current_phase: 4
@@ -18,8 +12,8 @@ project_cycle:
 epic_cycle: null
 
 handoff:
-  last_step_completed: 'diagnose-root'
-  next_skill: 'develop-tdd'
+  last_step_completed: 'release-branch'
+  next_skill: 'survey-context'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'
@@ -68,4 +62,9 @@ decisions:
     gate: 'fix-bug Step 5 release-branch'
     topic: 'BUG-001 husky hooks not POSIX — fixed and released'
     reason: 'pre-push and commit-msg rewritten as POSIX sh; release.yml exempted via GIT_BIGPOWERS_LAND. Release workflow run 42257002379 green and v1.6.0 published after 6 consecutive failures'
+    status: 'accepted'
+  - id: 'DEC-HISTORICAL-GAPS'
+    gate: 'fix-bug Step 5 release-branch'
+    topic: 'Historical gaps closed — BUG-002..BUG-006'
+    reason: 'E2E gated in CI (e2e job green in 42259804397), traceability gate repaired (was vacuous), e03 archived, land-branch branch cleanup fixed, CHANGELOG backfilled, issue #1 closed as obsolete. Audit in specs/HISTORICAL-GAPS-CLOSED.md'
     status: 'accepted'
