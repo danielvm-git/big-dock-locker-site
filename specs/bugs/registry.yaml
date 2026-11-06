@@ -89,6 +89,8 @@ bugs:
     status: blocked
     blocked_by: BUG-012
     file: specs/bugs/BUG-008-no-post-deploy-smoke-check.md
+    plan_ready: 'scripts/smoke-live.mjs (Playwright, live URL + --self-test negative mode) + .github/workflows/deploy-smoke.yml + ciWiring drift guard + CONVENTIONS note — designed, not landed, because no deploy exists to gate'
+    owner_action: 'see BUG-012'
     found: '2026-11-06'
     issue: 14
     type: gap
@@ -157,7 +159,7 @@ bugs:
     file: specs/bugs/BUG-008-no-post-deploy-smoke-check.md
     found: '2026-11-06'
     issue: 14
-    blocked_action: 'owner must re-link the Netlify GitHub integration or install a build hook / deploy token'
+    blocked_action: 'owner must re-link the Netlify GitHub integration (site settings → Build & deploy → Link repository), or authorise a CI deploy (NETLIFY_AUTH_TOKEN secret + netlify deploy --prod), or install a build hook + secret'
     affected:
       - netlify.toml
       - .github/workflows/ (no deploy job)
