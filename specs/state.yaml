@@ -16,7 +16,7 @@ epic_cycle: null
 bug_cycle:
   current_step: 3
   completed_steps: [1, 2]
-  batch: 'A'
+  batch: 'D'
   order: [13, 14, 15, 16]
   issues:
     '13':
@@ -25,35 +25,41 @@ bug_cycle:
       batch: 'A'
       worktree: '../perf-bundle-budget'
       branch: 'perf/bundle-budget'
-      status: in_progress
+      status: done
       verify: 'npm run preflight (with check:bundle) + lighthouse >= 90 live'
-      pr: null
+      pr: 17
+      merged_sha: '84f1d4a'
+      evidence: 'preflight 94/94, e2e 4/4, CI 42268290438 green, release v1.6.4 (42268290387). Critical-path JS 113.54 -> 30.34 KB gzip, Lighthouse 44 -> 95 (local preview).'
+      residual: 'Live-URL Lighthouse >= 90 blocked by BUG-012 (no Netlify deploy).'
     '14':
       bug: BUG-008
       type: gap
       batch: 'B'
-      worktree: '../ci-deploy-smoke'
+      worktree: null
       branch: 'ci/deploy-smoke'
-      status: pending
+      status: blocked
+      blocked_by: BUG-012
+      blocked_reason: 'A post-deploy gate cannot pass while no deploy exists; landing it would turn main red. Needs the owner to restore the Netlify deploy path.'
       verify: 'node scripts/smoke-live.mjs --self-test + gh run watch deploy-smoke'
       pr: null
     '15':
       bug: BUG-009
       type: bug
       batch: 'C'
-      worktree: '../fix-trace-stories-upstream'
-      branch: 'fix/trace-stories-upstream'
-      status: pending
+      worktree: '../bigpowers-trace-fix'
+      branch: 'fix/trace-stories-status'
+      status: in_progress
       cross_repo: 'danielvm-git/bigpowers'
       verify: 'pytest tests/test_trace_stories.py + bash scripts/trace-stories.sh --strict'
-      pr: null
+      pr: 'danielvm-git/bigpowers#222'
+      local_step: 'upstream PR open; re-vendor scripts/lib/trace-stories.py here after it merges'
     '16':
       bug: BUG-010
       type: chore-decisions
       batch: 'D'
       worktree: '../chore-workflow-template-decision'
       branch: 'chore/workflow-template-decision'
-      status: pending
+      status: in_progress
       verify: 'specs/adr/0006-split-pair-workflow-templates.md committed on main'
       pr: null
 
@@ -73,14 +79,15 @@ baseline:
   note: 'Preflight green at intake — no red baseline to fix first.'
 
 handoff:
-  last_step_completed: 'intake + batch plan'
-  next_skill: 'develop-tdd'
-  open_decisions: []
+  last_step_completed: 'batches A-D: A merged, B blocked on BUG-012, C upstream PR open, D in flight'
+  next_skill: 'release-branch'
+  open_decisions:
+    - 'BUG-012: restore the Netlify deploy path (owner action) before #14 can land'
   required_reading:
     - 'specs/release-plan.yaml'
     - 'specs/execution-status.yaml'
     - 'specs/bugs/registry.yaml'
-  resume_note: 'Batches A→D in issue order (13, 14, 15, 16). Batch A = BUG-007 perf.'
+  resume_note: 'Resume from specs/bugs/registry.yaml + specs/state.yaml bug_cycle. Next forward work after the sweep: land BUG-008 once BUG-012 is fixed, then re-measure live Lighthouse for BUG-007.'
 
 git:
   branch: 'main'
@@ -150,4 +157,24 @@ decisions:
     gate: 'assess-impact / scope check'
     topic: 'BUG-007 also downscales the 4.1 MB icon.png and fixes hero CLS'
     reason: 'Lighthouse baseline shows icon.png is 4,134,861 B of 4,340 KiB total page weight and CLS 0.24. Issue #13 acceptance requires Lighthouse >= 90 on the live URL, which is unreachable while the favicon is 4.1 MB. Treating this as in-scope for #13 rather than a scope change; recorded in BUG-007.'
+    status: 'accepted'
+  - id: 'DEC-SWEEP-LANDING'
+    gate: 'release-branch Gate'
+    topic: 'Land via PR + squash merge instead of scripts/land-branch.sh'
+    reason: 'CONVENTIONS nominates land-branch.sh, which pushes to main *and then* CI runs. A PR produces green checks before main moves, which is strictly safer and is explicitly within the standing approval. land-branch.sh duties (epic-capsule archive check, worktree removal, branch deletion) are performed manually per batch; nothing is force-pushed and main is never rewritten.'
+    status: 'accepted'
+  - id: 'DEC-BUG008-BLOCKED'
+    gate: 'issue sweep step 4 — stop condition (external failure)'
+    topic: 'Batch B (#14 / BUG-008) stopped before landing'
+    reason: 'Netlify git integration is dead (no webhook, installation_id null, no build hook, newest deploy 2026-05-21). A post-deploy smoke gate cannot pass while no deploy exists, and shipping it would turn main red. Not weakened into an always-passing check. Owner action required (BUG-012).'
+    status: 'accepted'
+  - id: 'DEC-BUG011-FIX'
+    gate: 'CONVENTIONS § Discovered Defects'
+    topic: 'Fix validate-specs-yaml.sh archive fallback'
+    reason: 'Reproducible gate failure on main (exit 1 on three archived capsules), same class as BUG-006. Trivial fix, verified exit 0.'
+    status: 'accepted'
+  - id: 'DEC-BUG013-FIX'
+    gate: 'CONVENTIONS § Discovered Defects'
+    topic: 'Untrack 28 committed .pyc files and ignore __pycache__'
+    reason: 'Committed build artefacts polluted every diff that ran a python script. Removing them from the index changes no runtime behaviour.'
     status: 'accepted'
