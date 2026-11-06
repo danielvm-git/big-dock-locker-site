@@ -27,5 +27,13 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        // Cache the framework separately from app code. Scoped to Vue on
+        // purpose: a blanket node_modules rule would drag the lazily imported
+        // Sentry SDK back into the critical path (BUG-007).
+        manualChunks: (id: string) => (/node_modules\/(vue|@vue)\//.test(id) ? 'vue' : undefined),
+      },
+    },
   },
 })

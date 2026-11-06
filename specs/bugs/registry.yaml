@@ -60,6 +60,74 @@ bugs:
       - scripts/lib/trace-stories.py
     evidence: 'dev_status read from development_status, so all stories resolved to backlog and --strict skipped them; MIN_STORY_BASELINE was 1'
     upstream_note: 'danielvm-git/bigpowers scripts/lib/trace-stories.py has the same wrong-key defect'
+  # ── Intake from the open-issue sweep (2026-11-06) ────────────────────────
+  # One entry per open GitHub issue. `issue` links back to the tracker.
+  - id: BUG-007
+    title: 'Site exceeds the "under 1 second" vision criterion — 117 KB gzip JS, 4.1 MB favicon'
+    severity: high
+    scope: perf
+    status: fixed
+    file: specs/bugs/BUG-007-perf-budget-and-sentry-critical-path.md
+    found: '2026-11-06'
+    fixed: '2026-11-06'
+    evidence: 'Critical-path JS 113.54 → 30.34 KB gzip (-73%), page weight 4,340 → 411 KiB, TBT 2,470 → 40 ms, CLS 0.24 → 0.017, Lighthouse 44 → 95 (local preview). Budget gate wired into preflight; 94/94 unit + 4/4 e2e green.'
+    issue: 13
+    type: gap
+    priority: 1
+    affected:
+      - vite.config.ts
+      - src/main.ts
+      - src/components/DownloadSection.vue
+      - src/components/HeroSection.vue
+      - public/icon.png
+      - package.json
+    verify: 'npm run preflight (includes check:bundle) + lighthouse on the live URL'
+  - id: BUG-008
+    title: 'Deployment is invisible to CI — no post-deploy smoke check on the live site'
+    severity: high
+    scope: ci
+    status: open
+    file: specs/bugs/BUG-008-no-post-deploy-smoke-check.md
+    found: '2026-11-06'
+    issue: 14
+    type: gap
+    priority: 2
+    affected:
+      - .github/workflows/deploy-smoke.yml
+      - scripts/smoke-live.mjs
+      - CONVENTIONS.md
+      - tests/unit/ciWiring.test.ts
+    verify: 'node scripts/smoke-live.mjs (negative fixture) + gh run watch on the new workflow'
+    depends_on: [BUG-007]
+  - id: BUG-009
+    title: 'trace-stories --strict is vacuous upstream — wrong status key, no archive fallback, magic baseline'
+    severity: high
+    scope: tooling
+    status: open
+    file: specs/bugs/BUG-009-trace-stories-vacuous-gate-upstream.md
+    found: '2026-11-06'
+    issue: 15
+    type: bug
+    priority: 3
+    affected:
+      - scripts/lib/trace-stories.py
+      - danielvm-git/bigpowers:scripts/lib/trace-stories.py
+    verify: 'bash scripts/trace-stories.sh --strict (6 stories, exit 0) + upstream pytest regression test'
+    cross_repo: 'danielvm-git/bigpowers'
+    blocked_note: 'Upstream half requires write access to danielvm-git/bigpowers; local half is verifiable here.'
+  - id: BUG-010
+    title: 'Undecided: adopt or defer the split-pair static workflow templates'
+    severity: low
+    scope: ci
+    status: open
+    file: specs/adr/0006-split-pair-workflow-templates.md
+    found: '2026-11-06'
+    issue: 16
+    type: chore-decisions
+    priority: 4
+    affected:
+      - specs/adr/0006-split-pair-workflow-templates.md
+    verify: 'decision record exists and the issue is closed with the reason'
 archived:
   - id: BUG-001
     title: 'Release workflow red on every push to main — husky hooks are not POSIX'
