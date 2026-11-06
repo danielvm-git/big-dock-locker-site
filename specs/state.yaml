@@ -34,7 +34,7 @@ bug_cycle:
     '14':
       bug: BUG-008
       type: gap
-      batch: 'B'
+      batch: 'B' # not landed — see DEC-BUG008-BLOCKED
       worktree: null
       branch: 'ci/deploy-smoke'
       status: blocked
@@ -81,8 +81,9 @@ baseline:
   note: 'Preflight green at intake — no red baseline to fix first.'
 
 handoff:
-  last_step_completed: 'batches A-D: A and D merged, C upstream merged + re-vendor in flight, B blocked on BUG-012'
-  next_skill: 'release-branch'
+  last_step_completed: 'issue sweep complete: A, C, D shipped; B blocked (BUG-012); review pass landed (PR #20)'
+  next_skill: 'fix-bug'
+  next_item: 'BUG-012 (blocks issue #14) — restore the Netlify deploy path, then land the post-deploy smoke gate from specs/bugs/BUG-008'
   open_decisions:
     - 'BUG-012: restore the Netlify deploy path (owner action) before #14 can land'
   required_reading:
@@ -184,4 +185,14 @@ decisions:
     gate: 'release-branch Gate (cross-repo)'
     topic: 'Shipped the trace-stories fix upstream and re-vendored it here'
     reason: 'PR danielvm-git/bigpowers#222 merged with all four gates green (sync, skill-verify, story-verify, verification-gates). Two gate rounds were needed: the fix first broke the golden G-10 zero-story anti-vacuity check and the documented all-todo contract, which had been satisfiable only because the 50-story baseline masked them. Both are now explicit, and scripts/test-trace-strict.sh fixtures assert the real `stories:` schema with a decoy `development_status:` key.'
+    status: 'accepted'
+  - id: 'DEC-SWEEP-REVIEW'
+    gate: 'issue sweep step 6 — full-diff review'
+    topic: 'Review pass found and fixed one documentation gap; nothing else new'
+    reason: 'HP-1 of specs/HOT-PATH-AND-STATE-MACHINE-AUDIT.md still claimed Sentry.init() ran before app.mount(), and neither AGENTS.md nor CONVENTIONS.md named the new bundle budget, so the ceiling was invisible to future agents. Both fixed in PR #20. Known non-blocking observations left alone: sourcemaps are published with dist/ (harmless — the repo and site are MIT/public), and release tags carry no binary assets by design (postTagAssets commits files; it does not upload release assets).'
+    status: 'accepted'
+  - id: 'DEC-BUG012-NO-UNILATERAL-INFRA'
+    gate: 'issue sweep — approval boundary'
+    topic: 'Did not create a Netlify build hook or a repo secret to unblock #14'
+    reason: 'Wiring the deploy back up is production infrastructure (Netlify GitHub App re-authorisation, a build hook, or a NETLIFY_AUTH_TOKEN secret). Creating credentials and re-enabling production deploys is outside the granted approval (commit/push/PR/merge/comment). Escalated on issue #14 with three concrete options instead.'
     status: 'accepted'
