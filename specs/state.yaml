@@ -1,7 +1,7 @@
 # bigpowers state tracking
 bigpowers_version: '2.11.0'
 active_flow: 'build_epic'
-active_epic: 'e01-site-foundation'
+active_epic: 'e02-live-releases'
 workflow_mode: 'solo-git'
 
 project_cycle:
@@ -10,26 +10,33 @@ project_cycle:
   phase_name: 'build'
 
 epic_cycle:
-  epic_id: 'e01'
-  active_story_id: 'e01s02'
-  current_step: 8
-  story_bcps: 3
-  completed_steps: [0, 1, 2, 3, 4, 5, 6, 7]
-  epic_status: 'done'
+  epic_id: 'e02'
+  active_story_id: 'e02s01'
+  current_step: 3
+  story_bcps: 4
+  completed_steps: [0, 1, 2]
 
 handoff:
-  last_step_completed: 'release-branch'
-  next_skill: 'survey-context'
+  last_step_completed: 'plan-work'
+  next_skill: 'kickoff-branch'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'
-    - 'specs/epics/e01-site-foundation/epic.yaml'
+    - 'specs/epics/e02-live-releases/epic.yaml'
+    - 'specs/epics/e02-live-releases/e02s01-tasks.yaml'
+    - 'specs/security/epics/e02/THREAT_MODEL.md'
 
 git:
   branch: 'main'
   clean: true
 
 metrics:
-  story_start: '2026-11-06T12:35:00Z'
-  story_end: '2026-11-06T12:36:00Z'
+  story_start: '2026-11-06T13:01:00Z'
   bcp_baseline: 14
+
+decisions:
+  - id: 'DEC-E02-START'
+    gate: 'build-epic Step 0 Hard Gate'
+    topic: 'Standing approval to proceed with e02 autonomous build'
+    reason: 'User standing approval granted for recommended path through all gates'
+    status: 'accepted'

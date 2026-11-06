@@ -22,10 +22,11 @@ stories:
     started_at: '2026-11-06T12:35:00-03:00'
     completed_at: '2026-11-06T12:36:00-03:00'
   e02s01:
-    status: 'pending'
+    status: 'in-progress'
     epic: 'e02'
     title: 'Pure Release State Machine & useLatestRelease Composable'
     bcp: 4
+    started_at: '2026-11-06T13:01:00-03:00'
   e02s02:
     status: 'pending'
     epic: 'e02'
