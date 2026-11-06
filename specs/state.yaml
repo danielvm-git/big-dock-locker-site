@@ -18,8 +18,8 @@ epic_cycle:
   epic_status: 'done'
 
 handoff:
-  last_step_completed: 'audit-code'
-  next_skill: 'release-branch'
+  last_step_completed: 'release-branch'
+  next_skill: 'survey-context'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'
