@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- big-release managed -->
 
+## [1.6.4] - 2026-11-06
+
+### Changed
+
+- **bundle:** defer Sentry and gate the critical-path payload ([#17](https://github.com/danielvm-git/big-dock-locker-site/issues/17)) ([84f1d4a](https://github.com/danielvm-git/big-dock-locker-site/commit/84f1d4ae95f3d40025d3267dede09bc66faaf620))
+
 ## [1.6.3] - 2026-11-06
 
 ### Bug Fixes
