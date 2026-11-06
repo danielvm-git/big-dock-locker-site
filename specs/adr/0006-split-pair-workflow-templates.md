@@ -10,10 +10,10 @@ Accepted (defer — no trigger has fired)
 
 `danielvm-git/.github` now offers a split-pair static pipeline:
 
-| File                             | Purpose                                            |
-| -------------------------------- | -------------------------------------------------- |
-| `test-build-release-static.yml`  | `test → verify → release → upload deploy-meta`      |
-| `deploy-static.yml`              | `workflow_run → download artifact → deploy`         |
+| File                            | Purpose                                        |
+| ------------------------------- | ---------------------------------------------- |
+| `test-build-release-static.yml` | `test → verify → release → upload deploy-meta` |
+| `deploy-static.yml`             | `workflow_run → download artifact → deploy`    |
 
 `test-build-release-static.yml` accepts a `release_tool` input defaulting to
 `semantic-release` and also supports `big-release`, so unlike the obsolete

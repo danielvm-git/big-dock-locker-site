@@ -21,23 +21,23 @@ blocking chunk, and the favicon is a 4.1 MB PNG.
 
 Local build of `main` @ `4ef650b` (v1.6.3):
 
-| Asset                    | Raw      | Gzip        |
-| ------------------------ | -------- | ----------- |
-| `dist/assets/index-*.js` | 347.42 kB | **117.40 kB** |
-| `dist/assets/index-*.css` | 11.13 kB | 2.73 kB     |
+| Asset                     | Raw       | Gzip          |
+| ------------------------- | --------- | ------------- |
+| `dist/assets/index-*.js`  | 347.42 kB | **117.40 kB** |
+| `dist/assets/index-*.css` | 11.13 kB  | 2.73 kB       |
 
 Live site `https://bigdocklocker.netlify.app/` (Lighthouse 12, mobile defaults,
 serving the older `index-COMqoqnk.js` build):
 
-| Metric      | Value  |
-| ----------- | ------ |
-| Performance | **44** |
-| FCP         | 2.2 s  |
-| LCP         | 3.2 s  |
-| TBT         | 2,470 ms |
-| Speed Index | 7.0 s  |
-| CLS         | 0.24   |
-| TTI         | 4.9 s  |
+| Metric      | Value     |
+| ----------- | --------- |
+| Performance | **44**    |
+| FCP         | 2.2 s     |
+| LCP         | 3.2 s     |
+| TBT         | 2,470 ms  |
+| Speed Index | 7.0 s     |
+| CLS         | 0.24      |
+| TTI         | 4.9 s     |
 | Page weight | 4,340 KiB |
 
 Page-weight breakdown from the same report: `icon.png` **4,134,861 B**,
