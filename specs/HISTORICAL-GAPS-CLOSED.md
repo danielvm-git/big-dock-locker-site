@@ -141,6 +141,32 @@ design and was left unchanged.
 
 ---
 
+### 3.3 BUG-003 follow-up — the new e2e job timed out, so it was hardened
+
+Adding the `e2e` job exposed a second problem immediately. On run
+`42260692087` the job ended as `cancelled` after 10m19s; GitHub reports a job
+timeout that way, which reads like a concurrency cancellation and hides the
+real cause. Step timings showed it clearly:
+
+| Run           | `Install Chromium`                           |
+| ------------- | -------------------------------------------- |
+| `42259804397` | 29s                                          |
+| `42260692087` | 10m02s → job timeout (`timeout-minutes: 10`) |
+
+`npx playwright install --with-deps chromium` runs `apt-get` against the
+runner's mirrors, so its duration is not bounded by anything this repo
+controls. A gate that fails ~10 minutes in, intermittently, is worse than no
+gate.
+
+Fixed: the job now runs in the official Playwright container
+(`mcr.microsoft.com/playwright:v1.62.1-noble`), where the browsers and their
+system libraries are preinstalled, and the install step is gone entirely.
+`timeout-minutes` raised to 15 as a backstop.
+
+The image tag must track `@playwright/test`, so `tests/unit/ciWiring.test.ts`
+asserts the two versions match. Mutation check: changing the tag to `v1.61.0`
+fails the test with `expected '1.61.0' to be '1.62.1'`.
+
 ## 4. Conclusion
 
 Every historical red run has a disposition: 7 fixed, 1 unretrievable and

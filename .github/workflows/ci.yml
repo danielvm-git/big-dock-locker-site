@@ -33,9 +33,19 @@ jobs:
 
   # story: e03s02 — the Playwright suite is part of the CI contract. `preflight`
   # does not include it, so without this job the browser flow had no gate.
+  #
+  # The job runs in the official Playwright image so the browsers and their
+  # system libraries are already present. Installing them per-run via
+  # `npx playwright install --with-deps` was measured at 29s once and >10min on
+  # another run, which hit timeout-minutes and surfaced as `cancelled`.
+  #
+  # The image tag must match @playwright/test in package-lock.json;
+  # tests/unit/ciWiring.test.ts fails if the two drift apart.
   e2e:
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
     steps:
       - uses: actions/checkout@v7
 
@@ -46,9 +56,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
 
       # playwright.config.ts serves `npm run preview`, which needs dist/.
       - name: Build

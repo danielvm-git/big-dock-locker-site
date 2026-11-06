@@ -43,8 +43,22 @@ describe('CI covers every gate defined in package.json', () => {
     expect(runsScript(CI, 'test:e2e')).toBe(true)
   })
 
-  it('installs a browser for the E2E suite', () => {
-    expect(CI).toMatch(/playwright install/)
+  // The e2e job runs in the official Playwright image so browsers and system
+  // libraries are preinstalled. Installing them per run took >10 minutes on one
+  // runner and hit timeout-minutes (reported as `cancelled`). The image tag has
+  // to track the @playwright/test version or the browsers will not match.
+  it('pins the Playwright image to the installed @playwright/test version', () => {
+    const installed = (
+      JSON.parse(
+        readFileSync(resolve(ROOT, 'node_modules/@playwright/test/package.json'), 'utf-8'),
+      ) as {
+        version: string
+      }
+    ).version
+    const image = CI.match(/mcr\.microsoft\.com\/playwright:v([\d.]+)-/)
+
+    expect(image, 'no Playwright container image in ci.yml').not.toBeNull()
+    expect(image?.[1]).toBe(installed)
   })
 
   it('builds the app before running E2E (preview serves dist/)', () => {
