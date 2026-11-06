@@ -1,16 +1,21 @@
 # Defect & Bug Registry
 version: '1.0.0'
-bugs:
+bugs: []
+archived:
   - id: BUG-001
     title: 'Release workflow red on every push to main — husky hooks are not POSIX'
     severity: high
     scope: ci
-    status: in-progress
+    status: fixed
     file: specs/bugs/BUG-001-husky-hooks-not-posix.md
     found: '2026-11-06'
-    source: 'gh run list — Release workflow failure on 6/6 pushes to main'
+    fixed: '2026-11-06'
+    issue: 11
+    commits:
+      - e18b3ab
+      - 44c2e27
+    verified: 'Release workflow run 42257002379 green; v1.6.0 published'
     affected:
       - .husky/pre-push
       - .husky/commit-msg
       - .github/workflows/release.yml
-archived: []

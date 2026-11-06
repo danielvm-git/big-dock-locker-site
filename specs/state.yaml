@@ -1,13 +1,8 @@
 # bigpowers state tracking
 bigpowers_version: '2.11.0'
-active_flow: 'fix_bug'
+active_flow: 'survey-context'
 active_epic: null
 workflow_mode: 'solo-git'
-
-bug_cycle:
-  bug_id: 'BUG-001'
-  current_step: 4
-  completed_steps: [1, 2, 3]
 
 project_cycle:
   current_phase: 4
@@ -17,8 +12,8 @@ project_cycle:
 epic_cycle: null
 
 handoff:
-  last_step_completed: 'develop-tdd'
-  next_skill: 'validate-fix'
+  last_step_completed: 'release-branch'
+  next_skill: 'survey-context'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'
@@ -62,4 +57,9 @@ decisions:
     gate: 'release-branch Gate'
     topic: 'Epic e02 released and merged to main'
     reason: 'Preflight green, tests verified, dual-blind review approved, landed on main via land-branch.sh'
+    status: 'accepted'
+  - id: 'DEC-BUG001-FIX'
+    gate: 'fix-bug Step 5 release-branch'
+    topic: 'BUG-001 husky hooks not POSIX — fixed and released'
+    reason: 'pre-push and commit-msg rewritten as POSIX sh; release.yml exempted via GIT_BIGPOWERS_LAND. Release workflow run 42257002379 green and v1.6.0 published after 6 consecutive failures'
     status: 'accepted'

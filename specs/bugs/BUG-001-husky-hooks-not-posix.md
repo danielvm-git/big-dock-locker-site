@@ -1,6 +1,6 @@
 ---
 bug_id: BUG-001
-status: open
+status: fixed
 severity: high
 scope: ci
 title: Release workflow red on every push to main — husky hooks are not POSIX
