@@ -1,0 +1,14 @@
+story_id: e03s01
+title: 'Unit and Component Test Suite'
+spec: e03s01-unit-component-tests.md
+status: done
+bcps: 2
+risk: P2
+depends_on: [e02s01]
+tasks:
+  - id: 1
+    description: 'Verify HeroSection and DownloadSection unit tests.'
+    verify: 'npm run test -- tests/unit/DownloadSection.test.ts tests/unit/HeroSection.test.ts'
+    risk: P2
+    security: none
+    status: done

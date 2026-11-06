@@ -1,0 +1,20 @@
+story_id: e02s01
+title: 'Pure Release State Machine & useLatestRelease Composable'
+spec: e02s01-release-state-machine.md
+status: done
+bcps: 4
+risk: P1
+depends_on: [e01s02]
+tasks:
+  - id: 1
+    description: 'Verify pure release machine unit tests.'
+    verify: 'npm run test -- tests/unit/releaseMachine.test.ts'
+    risk: P1
+    security: none
+    status: done
+  - id: 2
+    description: 'Verify useLatestRelease composable network and timeout tests.'
+    verify: 'npm run test -- tests/unit/useLatestRelease.test.ts'
+    risk: P1
+    security: none
+    status: done

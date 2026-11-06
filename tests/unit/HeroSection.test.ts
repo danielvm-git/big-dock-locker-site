@@ -1,3 +1,4 @@
+// story: e03s01
 import { mount } from '@vue/test-utils'
 import HeroSection from '../../src/components/HeroSection.vue'
 import { useLatestRelease } from '../../src/composables/useLatestRelease'

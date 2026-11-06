@@ -1,3 +1,4 @@
+// story: e01s02
 import { mount } from '@vue/test-utils'
 import TheNavbar from '../../src/components/TheNavbar.vue'
 

@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// story: e01s02
+</script>
 
 <template>
   <header class="navbar">

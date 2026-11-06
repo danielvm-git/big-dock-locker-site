@@ -1,3 +1,4 @@
+// story: e02s01
 import { flushPromises } from '@vue/test-utils'
 
 const API_URL = 'https://api.github.com/repos/danielvm-git/big-dock-locker/releases/latest'

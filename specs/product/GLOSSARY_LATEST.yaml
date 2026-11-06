@@ -1,0 +1,16 @@
+# Ubiquitous Language Glossary
+terms:
+  - term: 'DockLocker'
+    definition: 'The core macOS desktop utility that pins and locks the macOS Dock configuration to prevent accidental icon rearrangement.'
+  - term: 'Release Machine'
+    definition: 'The pure TypeScript finite state machine reducer governing GitHub release metadata retrieval, caching, optimistic counts, and background refreshes.'
+  - term: 'Clipboard Machine'
+    definition: 'The UI state union managing the copy-to-clipboard lifecycle (idle, copying, copied, copy-error) for terminal commands.'
+  - term: 'Asset Target'
+    definition: 'Architecture-specific binary bundle (Apple Silicon arm64 vs Intel x64) distributed via GitHub Releases.'
+  - term: 'Live Release Badge'
+    definition: 'Dynamic UI element displaying the latest fetched tag version (e.g., v1.5.0) and published timestamp.'
+  - term: 'Preflight'
+    definition: 'The mandatory compound verification check running typecheck, vitest unit tests, prettier check, and vite build.'
+  - term: 'Solo-git'
+    definition: 'The bigpowers integration mode where a single developer uses worktrees and land scripts without pull-request ceremony.'

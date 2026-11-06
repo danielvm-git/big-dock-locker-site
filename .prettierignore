@@ -5,3 +5,7 @@ test-results
 playwright-report
 .git
 package-lock.json
+specs/codebase-wiki/
+specs/TRACEABILITY_LATEST.md
+specs/traceability-matrix.json
+

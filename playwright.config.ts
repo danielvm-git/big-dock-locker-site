@@ -1,3 +1,4 @@
+// story: e03s02
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({

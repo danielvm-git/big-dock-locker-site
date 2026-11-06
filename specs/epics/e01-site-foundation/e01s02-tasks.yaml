@@ -1,0 +1,20 @@
+story_id: e01s02
+title: 'Global CSS Tokens and Navbar Component'
+spec: e01s02-site-layout-navbar.md
+status: done
+bcps: 3
+risk: P2
+depends_on: [e01s01]
+tasks:
+  - id: 1
+    description: 'Verify style.css tokens exist and app builds.'
+    verify: "grep -q 'site-container' src/style.css && npm run build"
+    risk: P2
+    security: none
+    status: done
+  - id: 2
+    description: 'Verify TheNavbar component unit tests pass.'
+    verify: 'npm run test -- tests/unit/TheNavbar.test.ts'
+    risk: P2
+    security: none
+    status: done

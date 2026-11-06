@@ -1,0 +1,32 @@
+id: e01
+title: 'Site Foundation, Layout, and Assets'
+status: done
+wsjf: 8.0
+bcps: 5
+mode: capsule
+wsjf_rationale: 'Foundational styling, branding, and shell needed before any feature interaction can be tested.'
+stories:
+  - id: e01s01
+    title: Static Assets and HTML Shell
+    status: done
+    bcps: 2
+    description: 'App icon, dashboard graphics, and HTML metadata shell configured.'
+    files:
+      - index.html
+      - public/icon.png
+      - public/dashboard.png
+    verify: test -f public/icon.png && test -f public/dashboard.png && grep -q 'Big DockLocker' index.html
+    tags:
+      - 'story: e01s01'
+  - id: e01s02
+    title: Global CSS Tokens and Navbar Component
+    status: done
+    bcps: 3
+    description: 'Global CSS tokens, layout containers, and sticky navigation bar with CTA.'
+    files:
+      - src/style.css
+      - src/components/TheNavbar.vue
+      - tests/unit/TheNavbar.test.ts
+    verify: npm run test -- tests/unit/TheNavbar.test.ts
+    tags:
+      - 'story: e01s02'

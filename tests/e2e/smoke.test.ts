@@ -1,3 +1,4 @@
+// story: e03s02
 import { test, expect } from '@playwright/test'
 
 const GITHUB_API_GLOB = '**/api.github.com/**'

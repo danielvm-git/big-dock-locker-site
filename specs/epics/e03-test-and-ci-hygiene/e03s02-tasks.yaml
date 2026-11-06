@@ -1,0 +1,14 @@
+story_id: e03s02
+title: 'Playwright E2E and CI Preflight Wiring'
+spec: e03s02-playwright-ci-preflight.md
+status: done
+bcps: 1
+risk: P2
+depends_on: [e03s01]
+tasks:
+  - id: 1
+    description: 'Verify preflight command passes green.'
+    verify: 'npm run preflight'
+    risk: P2
+    security: none
+    status: done

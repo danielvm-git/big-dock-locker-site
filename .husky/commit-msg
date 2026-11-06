@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Conventional commit check & AI attribution block
+
+COMMIT_MSG_FILE="$1"
+FIRST_LINE=$(head -n 1 "$COMMIT_MSG_FILE")
+
+# Allow merge commits or release commits
+if [[ "$FIRST_LINE" =~ ^Merge || "$FIRST_LINE" =~ ^v[0-9] ]]; then
+  exit 0
+fi
+
+# Conventional commit pattern
+CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_-]+\))?!?: .+$"
+
+if ! [[ "$FIRST_LINE" =~ $CONVENTIONAL_PATTERN ]]; then
+  echo "ERROR: Commit message does not follow Conventional Commits format."
+  echo "Format: <type>(<scope>): <subject> OR <type>: <subject>"
+  echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+  echo "Got: $FIRST_LINE"
+  exit 1
+fi
+
+# Block Co-authored-by AI attribution
+if grep -iE "co-authored-by:.*(claude|gemini|assistant|gpt|copilot|ai)" "$COMMIT_MSG_FILE" >/dev/null 2>&1; then
+  echo "ERROR: AI attribution in commits is forbidden per project rules."
+  exit 1
+fi
+
+exit 0

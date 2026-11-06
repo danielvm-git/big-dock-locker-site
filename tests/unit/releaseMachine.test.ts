@@ -1,3 +1,4 @@
+// story: e02s01
 import { createInitialState, releaseReducer } from '../../src/machines/releaseMachine'
 import type { Release } from '../../src/machines/releaseMachine'
 

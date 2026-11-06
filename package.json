@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "lint": "prettier --check .",
     "prepare": "husky",
-    "typecheck": "vue-tsc -b"
+    "typecheck": "vue-tsc -b",
+    "preflight": "npm run typecheck && npm run test && npm run lint && npm run build"
   },
   "dependencies": {
     "@sentry/vue": "^10.53.1",

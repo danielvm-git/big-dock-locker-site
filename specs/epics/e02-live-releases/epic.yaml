@@ -1,0 +1,32 @@
+id: e02
+title: 'Live GitHub Releases & Interactive Machines'
+status: done
+wsjf: 6.75
+bcps: 6
+mode: capsule
+wsjf_rationale: 'Core business functionality: live download links, live version badges, and clipboard command copying.'
+stories:
+  - id: e02s01
+    title: Pure Release State Machine & useLatestRelease Composable
+    status: done
+    bcps: 4
+    description: 'Pure state reducer and Vue composable service managing release lifecycle, caching, and background visibility revalidations.'
+    files:
+      - src/machines/releaseMachine.ts
+      - src/composables/useLatestRelease.ts
+      - tests/unit/releaseMachine.test.ts
+      - tests/unit/useLatestRelease.test.ts
+    verify: npm run test -- tests/unit/releaseMachine.test.ts tests/unit/useLatestRelease.test.ts
+    tags:
+      - 'story: e02s01'
+  - id: e02s02
+    title: Install Section Clipboard State Machine
+    status: done
+    bcps: 2
+    description: 'Terminal install command snippet with robust multi-state clipboard copying.'
+    files:
+      - src/components/InstallSection.vue
+      - tests/unit/InstallSection.test.ts
+    verify: npm run test -- tests/unit/InstallSection.test.ts
+    tags:
+      - 'story: e02s02'

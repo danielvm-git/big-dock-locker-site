@@ -1,3 +1,4 @@
+// story: e02s02
 import { flushPromises, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import InstallSection from '../../src/components/InstallSection.vue'

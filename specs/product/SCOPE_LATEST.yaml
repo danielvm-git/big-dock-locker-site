@@ -1,0 +1,33 @@
+# Product Scope — Big DockLocker Marketing Website
+version: 1.0.0
+last_updated: '2026-11-06'
+
+in_scope:
+  - 'Single-page responsive layout with sticky navbar, hero, features, how-it-works, install, download, and footer sections.'
+  - 'Reactive integration with GitHub Releases API (latest release tag, asset download links, release notes).'
+  - 'Pure finite state machine (`releaseMachine`) governing release fetch lifecycle (idle, loading, ready, failed, refreshing) with abort timeout and visibility auto-refresh.'
+  - 'Interactive terminal install command component with clipboard copy state machine (`idle`, `copying`, `copied`, `copy-error`).'
+  - 'Direct download CTAs with architecture separation for Apple Silicon (`arm64`) and Intel (`x64`).'
+  - 'Comprehensive unit testing suite with Vitest and end-to-end smoke tests with Playwright.'
+  - 'Automated CI preflight checks and semantic-release / big-release integration.'
+
+out_of_scope:
+  - 'Server-side rendering (SSR) or dedicated dynamic backend service.'
+  - 'User authentication or accounts.'
+  - 'In-page telemetry data collection without user consent.'
+  - 'Complex multi-page blog system or database-backed CMS.'
+  - 'Direct binary hosting outside GitHub Releases.'
+
+constraints:
+  stack: 'Vue 3 Composition API, TypeScript, Vite, Node 24 LTS'
+  hosting: 'Static hosting (Netlify)'
+  api_rate_limits: 'GitHub unauthenticated API (60 req/hr) mitigated with in-memory caching and visibility debouncing'
+
+assumptions:
+  - 'GitHub Releases API remains reachable with CORS enabled for public repositories.'
+  - 'Assets follow standard DMG naming conventions (`*arm64.dmg`, `*x64.dmg` or `*intel.dmg`).'
+
+success_criteria:
+  - 'Preflight runs typecheck, test, lint, and build green in under 15 seconds.'
+  - '47 unit tests and 4 Playwright E2E smoke tests pass without network flakiness.'
+  - 'No layout shift (CLS < 0.1) during async release badge resolution.'

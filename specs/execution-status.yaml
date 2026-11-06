@@ -1,0 +1,39 @@
+# Execution Status Tracker
+version: '1.0.0'
+last_updated: '2026-11-06'
+
+development_status:
+  current_iteration: 1
+  phase: 'build'
+
+stories:
+  e01s01:
+    status: 'pending'
+    epic: 'e01'
+    title: 'Static Assets and HTML Shell'
+    bcp: 2
+  e01s02:
+    status: 'pending'
+    epic: 'e01'
+    title: 'Global CSS Tokens and Navbar Component'
+    bcp: 3
+  e02s01:
+    status: 'pending'
+    epic: 'e02'
+    title: 'Pure Release State Machine & useLatestRelease Composable'
+    bcp: 4
+  e02s02:
+    status: 'pending'
+    epic: 'e02'
+    title: 'Install Section Clipboard State Machine'
+    bcp: 2
+  e03s01:
+    status: 'pending'
+    epic: 'e03'
+    title: 'Unit and Component Test Suite'
+    bcp: 2
+  e03s02:
+    status: 'pending'
+    epic: 'e03'
+    title: 'Playwright E2E and CI Preflight Wiring'
+    bcp: 1

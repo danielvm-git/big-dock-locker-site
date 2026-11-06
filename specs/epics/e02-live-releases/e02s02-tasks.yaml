@@ -1,0 +1,14 @@
+story_id: e02s02
+title: 'Install Section Clipboard State Machine'
+spec: e02s02-install-clipboard-machine.md
+status: done
+bcps: 2
+risk: P2
+depends_on: [e01s02]
+tasks:
+  - id: 1
+    description: 'Verify InstallSection clipboard state machine unit tests.'
+    verify: 'npm run test -- tests/unit/InstallSection.test.ts'
+    risk: P2
+    security: none
+    status: done

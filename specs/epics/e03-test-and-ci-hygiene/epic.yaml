@@ -1,0 +1,31 @@
+id: e03
+title: 'Testing Pyramid and CI Preflight Gates'
+status: done
+wsjf: 10.5
+bcps: 3
+mode: capsule
+wsjf_rationale: 'Ensures no regressions can land; automates Preflight and Playwright verification.'
+stories:
+  - id: e03s01
+    title: Unit and Component Test Suite
+    status: done
+    bcps: 2
+    description: 'Component tests for HeroSection, DownloadSection, TheNavbar, and InstallSection.'
+    files:
+      - tests/unit/DownloadSection.test.ts
+      - tests/unit/HeroSection.test.ts
+    verify: npm run test -- tests/unit/DownloadSection.test.ts tests/unit/HeroSection.test.ts
+    tags:
+      - 'story: e03s01'
+  - id: e03s02
+    title: Playwright E2E and CI Preflight Wiring
+    status: done
+    bcps: 1
+    description: 'End-to-end browser smoke test with Playwright and GitHub Actions preflight configuration.'
+    files:
+      - playwright.config.ts
+      - tests/e2e/smoke.test.ts
+      - .github/workflows/ci.yml
+    verify: npm run preflight
+    tags:
+      - 'story: e03s02'

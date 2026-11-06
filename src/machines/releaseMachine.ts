@@ -1,3 +1,4 @@
+// story: e02s01
 export interface Asset {
   name: string
   browser_download_url: string

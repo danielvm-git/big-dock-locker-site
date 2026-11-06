@@ -1,0 +1,28 @@
+# Product Vision — Big DockLocker Marketing Website
+version: 1.0.0
+last_updated: '2026-11-06'
+
+problem:
+  statement: 'Mac users using Big DockLocker need an official, trusted, and up-to-date web destination to understand the utility, inspect features, verify security, and download architecture-specific DMGs without relying on manual release page hunting.'
+  pain_points:
+    - 'Manual download link maintenance often leaves sites pointing to outdated versions.'
+    - 'Users on Apple Silicon vs Intel can easily download the wrong binary without explicit architecture detection and live badge status.'
+    - 'Users require clear terminal commands and installation instructions for curl/sh setup.'
+
+users:
+  primary: 'macOS power users, developers, and system administrators looking to lock Dock configurations.'
+  secondary: 'Open-source contributors and technical evaluators inspecting code quality and release authenticity.'
+
+vision:
+  summary: 'A blazing-fast, static, zero-runtime-server marketing website that dynamically connects to the GitHub Releases API to serve live downloads, version badges, install commands, and feature demonstrations.'
+  value_propositions:
+    - 'Always up to date with zero deployment overhead on app release.'
+    - 'Clear architecture-specific download options (Apple Silicon & Intel).'
+    - 'Instant one-click terminal install command copying with clipboard feedback.'
+    - 'Clean, responsive, accessible single-page design adhering to modern web best practices.'
+
+success_criteria:
+  - 'Site loads under 1 second with static assets and minimal bundle size.'
+  - '100% of download links dynamically resolve to valid GitHub release assets.'
+  - 'All unit tests and end-to-end smoke tests pass green on every CI preflight.'
+  - 'Clipboard copy interaction handles all async states (idle, copying, copied, copy-error) gracefully.'

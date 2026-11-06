@@ -1,0 +1,274 @@
+#!/usr/bin/env python3
+# story: e48s15
+# story: BUG-2026-07-18-setup-pyyaml-missing
+import os
+import sys
+import json
+import glob
+import shutil
+import subprocess
+import tempfile
+
+# Ensure scripts/lib is on the path so sibling modules (link_utils, and the
+# simple_yaml fallback below) resolve regardless of cwd.
+_LIB_DIR = os.path.dirname(os.path.abspath(__file__))
+if _LIB_DIR not in sys.path:
+    sys.path.insert(0, _LIB_DIR)
+
+from link_utils import LINK_RE, EXTERNAL_RE  # noqa: E402
+from srp_engine_links import rewrite_links_for_pi  # noqa: E402
+from srp_engine_okf import render_okf_concept  # noqa: E402
+
+# End-user setup (bigpowers setup) may run on a python3 without PyYAML.
+# Prefer PyYAML for exact parsing; fall back to the dependency-free
+# simple_yaml.py (story e38s01) so setup never hard-crashes.
+try:
+    import yaml
+    _load_yaml = yaml.safe_load
+except ModuleNotFoundError:
+    from simple_yaml import parse_simple_yaml
+    _load_yaml = parse_simple_yaml
+
+
+def resolve_repo_root():
+    lib_dir = os.path.dirname(os.path.abspath(__file__))
+    # scripts/lib/srp-engine.py -> two levels up is REPO_ROOT
+    repo_candidate = os.path.dirname(os.path.dirname(lib_dir))
+    if os.path.isdir(os.path.join(repo_candidate, "scripts", "lib")) or os.path.isdir(
+        os.path.join(repo_candidate, "skills")
+    ):
+        return repo_candidate
+    return os.path.dirname(lib_dir)
+
+def parse_skill(skill_md_path):
+    if not os.path.isfile(skill_md_path):
+        print(f"Error: file not found {skill_md_path}", file=sys.stderr)
+        sys.exit(1)
+
+    skill_dir = os.path.dirname(skill_md_path)
+
+    # Read file content
+    with open(skill_md_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # Split frontmatter and body
+    parts = content.split('---')
+    if len(parts) < 3:
+        print(f"Error: invalid SKILL.md format in {skill_md_path}", file=sys.stderr)
+        sys.exit(1)
+
+    frontmatter_raw = parts[1]
+    # The body of SKILL.md starts after the second '---'
+    skill_body = '---'.join(parts[2:])
+
+    try:
+        frontmatter = _load_yaml(frontmatter_raw)
+    except Exception as e:
+        print(f"Error parsing YAML frontmatter in {skill_md_path}: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if not isinstance(frontmatter, dict):
+        print(f"Error: frontmatter is not a dictionary in {skill_md_path}", file=sys.stderr)
+        sys.exit(1)
+
+    name = frontmatter.get('name', '')
+    description = frontmatter.get('description', '')
+    effort = frontmatter.get('effort', 'standard')
+    model = frontmatter.get('model', '')
+
+    # Compile the full body (including other *.md files in the directory)
+    body = skill_body.strip()
+    extra_files = glob.glob(os.path.join(skill_dir, "*.md"))
+    # Filter out SKILL.md
+    extra_files = [f for f in extra_files if os.path.basename(f) != "SKILL.md"]
+    # Sort them by name (ASCII sorting as in LC_ALL=C sort)
+    extra_files.sort()
+
+    for extra_file in extra_files:
+        with open(extra_file, 'r', encoding='utf-8') as f:
+            extra_content = f.read()
+        body += "\n\n---\n\n" + extra_content.strip()
+
+    # Remove lines containing 'disable-model-invocation'
+    body_lines = body.splitlines()
+    body_lines = [line for line in body_lines if 'disable-model-invocation' not in line]
+    body = '\n'.join(body_lines)
+
+    return {
+        'name': name,
+        'description': description,
+        'effort': effort,
+        'model': model,
+        'body': body
+    }
+
+def get_active_adapters(repo_root):
+    targets_file = os.path.join(repo_root, "scripts", "targets.yaml")
+    if not os.path.isfile(targets_file):
+        return ["cursor", "gemini", "pi"]
+    try:
+        with open(targets_file, 'r', encoding='utf-8') as f:
+            data = _load_yaml(f.read())
+        adapters = []
+        for target in data.get('targets', []):
+            if target.get('skill') is not None:
+                adapter = target['skill'].get('adapter')
+                if adapter and adapter not in adapters:
+                    adapters.append(adapter)
+        return sorted(adapters)
+    except Exception as e:
+        print(f"Warning: error reading targets.yaml: {e}", file=sys.stderr)
+        return ["cursor", "gemini", "pi"]
+
+def iterate_skills(repo_root):
+    skills_root = os.path.join(repo_root, "skills")
+    if not os.path.isdir(skills_root):
+        skills_root = repo_root
+    
+    skills = []
+    for entry in os.listdir(skills_root):
+        skill_dir = os.path.join(skills_root, entry)
+        if os.path.isdir(skill_dir):
+            skill_md = os.path.join(skill_dir, "SKILL.md")
+            if os.path.isfile(skill_md):
+                skills.append(skill_md)
+    return sorted(skills)
+
+def resolve_bash():
+    """Return an explicit path to a usable bash interpreter.
+
+    On Windows, subprocess(['bash', ...]) goes through the Win32
+    CreateProcess search order, which checks C:\\Windows\\System32 before
+    PATH. That finds the WSL launcher stub (System32\\bash.exe) instead of
+    Git Bash and aborts with 'Windows Subsystem for Linux has no installed
+    distributions' on hosts without a WSL distro. shutil.which() honors PATH
+    order, so ask it for an explicit path first; fall back to the bare name
+    for minimal non-Windows environments where nothing is on PATH.
+    """
+    return os.environ.get("BIGPOWERS_BASH") or shutil.which("bash") or "bash"
+
+
+def dispatch_to_adapter(skill_data, target, repo_root):
+    adapter_path = os.path.join(repo_root, "scripts", "adapters", f"{target}.sh")
+    if not os.path.isfile(adapter_path):
+        print(f"Error: adapter not found: {adapter_path}", file=sys.stderr)
+        sys.exit(1)
+
+    # Pipe JSON to the adapter
+    proc = subprocess.Popen(
+        [resolve_bash(), adapter_path],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    stdout, stderr = proc.communicate(input=json.dumps(skill_data))
+
+    if stdout:
+        print(stdout, end="")
+    if stderr:
+        print(stderr, end="", file=sys.stderr)
+
+    if proc.returncode != 0:
+        print(f"Error: adapter {target} failed with exit code {proc.returncode}", file=sys.stderr)
+        sys.exit(proc.returncode)
+
+def _write_ir_stream(records):
+    fd, stream_path = tempfile.mkstemp(prefix="bigpowers-ir-", suffix=".bin")
+    with os.fdopen(fd, "wb") as stream:
+        for data in records:
+            pi_body = rewrite_links_for_pi(data['body'], data['name'])
+            for field in (data['name'], data['description'], data['model'], data['body'], pi_body):
+                stream.write(field.encode("utf-8"))
+                stream.write(b"\x00")
+    return stream_path
+
+
+def render_all(records, adapters, repo_root):
+    """Render every skill through each adapter with one bash process per adapter.
+
+    The previous path spawned one bash (plus three jq) per skill×adapter — about
+    1,539 bash and 4,600 jq processes from a single Python process. On constrained
+    Windows sessions that exhausts process-creation resources, so the run dies
+    with STATUS_DLL_INIT_FAILED (0xC0000142) and then hangs on orphaned children.
+    Writing the IR once and letting a small bash driver source the adapter keeps
+    the same rendering code while dropping to one process per adapter.
+    """
+    if not records:
+        return
+
+    driver = os.path.join(repo_root, "scripts", "lib", "adapter-render-all.sh")
+    bash = resolve_bash()
+    stream_path = _write_ir_stream(records)
+    try:
+        for adapter in adapters:
+            adapter_path = os.path.join(repo_root, "scripts", "adapters", f"{adapter}.sh")
+            if not os.path.isfile(adapter_path):
+                print(f"Error: adapter not found: {adapter_path}", file=sys.stderr)
+                sys.exit(1)
+            proc = subprocess.run([bash, driver, adapter_path, stream_path])
+            if proc.returncode != 0:
+                print(f"Error: adapter {adapter} failed with exit code {proc.returncode}", file=sys.stderr)
+                sys.exit(1)
+    finally:
+        try:
+            os.unlink(stream_path)
+        except OSError:
+            pass
+
+
+def main():
+    repo_root = resolve_repo_root()
+
+    if "--all" in sys.argv:
+        okf_mode = "--okf" in sys.argv
+        skills = iterate_skills(repo_root)
+        adapters = get_active_adapters(repo_root)
+
+        okf_wiki_skills = os.environ.get("OKF_WIKI_SKILLS", os.path.join(repo_root, "specs", "skills-wiki", "skills"))
+
+        records = []
+        for skill_md in skills:
+            skill_data = parse_skill(skill_md)
+            if not skill_data['name']:
+                continue
+            records.append(skill_data)
+
+        render_all(records, adapters, repo_root)
+
+        if okf_mode:
+            for skill_data in records:
+                render_okf_concept(skill_data, okf_wiki_skills)
+        return
+
+    if len(sys.argv) < 2:
+        print("Usage: srp-engine.py <path-to-SKILL.md> [--dry-run] [--target <target>]", file=sys.stderr)
+        print("       srp-engine.py --all [--okf]", file=sys.stderr)
+        sys.exit(1)
+
+    skill_md_path = sys.argv[1]
+    dry_run = "--dry-run" in sys.argv
+    target = None
+
+    if "--target" in sys.argv:
+        try:
+            target_idx = sys.argv.index("--target")
+            target = sys.argv[target_idx + 1]
+        except (ValueError, IndexError):
+            print("Error: --target requires an argument", file=sys.stderr)
+            sys.exit(1)
+
+    skill_data = parse_skill(skill_md_path)
+
+    if target == "pi":
+        skill_data = dict(skill_data)
+        skill_data["body_pi_skill"] = rewrite_links_for_pi(skill_data['body'], skill_data['name'])
+
+    if dry_run or not target:
+        print(json.dumps(skill_data, indent=2))
+        return
+
+    dispatch_to_adapter(skill_data, target, repo_root)
+
+if __name__ == "__main__":
+    main()

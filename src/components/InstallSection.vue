@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// story: e02s02
 import { computed, onUnmounted, ref } from 'vue'
 
 const COMMAND = 'xattr -dr com.apple.quarantine /Applications/BigDockLocker.app'

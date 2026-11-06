@@ -1,0 +1,61 @@
+# Release Plan — Big DockLocker Marketing Website
+release:
+  version: '1.0.0'
+  baseline_bcp: 14
+
+bigpowers_version: '2.11.0'
+
+epics:
+  - id: 'e01'
+    slug: 'e01-site-foundation'
+    title: 'Site Foundation, Layout, and Assets'
+    file: 'epics/e01-site-foundation/epic.yaml'
+    capsule_dir: 'epics/e01-site-foundation'
+    bcp: 5
+    wsjf: 8.0
+    status: done
+    stories:
+      - id: 'e01s01'
+        title: 'Static Assets and HTML Shell'
+        bcp: 2
+        status: done
+      - id: 'e01s02'
+        title: 'Global CSS Tokens and Navbar Component'
+        bcp: 3
+        status: done
+
+  - id: 'e02'
+    slug: 'e02-live-releases'
+    title: 'Live GitHub Releases & Interactive Machines'
+    file: 'epics/e02-live-releases/epic.yaml'
+    capsule_dir: 'epics/e02-live-releases'
+    bcp: 6
+    wsjf: 6.75
+    status: done
+    stories:
+      - id: 'e02s01'
+        title: 'Pure Release State Machine & useLatestRelease Composable'
+        bcp: 4
+        status: done
+      - id: 'e02s02'
+        title: 'Install Section Clipboard State Machine'
+        bcp: 2
+        status: done
+
+  - id: 'e03'
+    slug: 'e03-test-and-ci-hygiene'
+    title: 'Testing Pyramid and CI Preflight Gates'
+    file: 'epics/e03-test-and-ci-hygiene/epic.yaml'
+    capsule_dir: 'epics/e03-test-and-ci-hygiene'
+    bcp: 3
+    wsjf: 10.5
+    status: done
+    stories:
+      - id: 'e03s01'
+        title: 'Unit and Component Test Suite'
+        bcp: 2
+        status: done
+      - id: 'e03s02'
+        title: 'Playwright E2E and CI Preflight Wiring'
+        bcp: 1
+        status: done
