@@ -11,9 +11,9 @@ project_cycle:
 
 epic_cycle:
   epic_id: 'e01'
-  active_story_id: 'e01s01'
+  active_story_id: 'e01s02'
   current_step: 3
-  story_bcps: 2
+  story_bcps: 3
   completed_steps: [0, 1, 2]
 
 handoff:
@@ -23,12 +23,12 @@ handoff:
   required_reading:
     - 'specs/release-plan.yaml'
     - 'specs/epics/e01-site-foundation/epic.yaml'
-    - 'specs/epics/e01-site-foundation/e01s01-tasks.yaml'
+    - 'specs/epics/e01-site-foundation/e01s02-tasks.yaml'
 
 git:
   branch: 'main'
   clean: true
 
 metrics:
-  story_start: '2026-11-06T12:30:00Z'
+  story_start: '2026-11-06T12:35:00Z'
   bcp_baseline: 14
