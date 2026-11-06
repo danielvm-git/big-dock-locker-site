@@ -8,11 +8,12 @@ development_status:
 
 stories:
   e01s01:
-    status: 'in-progress'
+    status: 'done'
     epic: 'e01'
     title: 'Static Assets and HTML Shell'
     bcp: 2
     started_at: '2026-11-06T12:30:00-03:00'
+    completed_at: '2026-11-06T12:34:00-03:00'
   e01s02:
     status: 'pending'
     epic: 'e01'
