@@ -9,41 +9,26 @@ project_cycle:
   completed_phases: [1, 2, 3]
   phase_name: 'build'
 
+epic_cycle:
+  epic_id: 'e01'
+  active_story_id: 'e01s01'
+  current_step: 3
+  story_bcps: 2
+  completed_steps: [0, 1, 2]
+
 handoff:
   last_step_completed: 'plan-work'
-  next_skill: 'develop-tdd'
+  next_skill: 'kickoff-branch'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'
     - 'specs/epics/e01-site-foundation/epic.yaml'
-    - 'specs/tech-architecture/tech-stack.md'
+    - 'specs/epics/e01-site-foundation/e01s01-tasks.yaml'
 
 git:
   branch: 'main'
   clean: true
 
 metrics:
-  story_start: '2026-11-06T12:00:00Z'
-  bcp_baseline: 12
-
-decisions:
-  - id: 'DEC-001'
-    topic: 'Vue 3 + Vite + TypeScript frontend stack'
-    status: 'accepted'
-    adr: 'specs/adr/0001-stack-vue3-vite-typescript.md'
-  - id: 'DEC-002'
-    topic: 'Pure state machine for GitHub release lifecycle'
-    status: 'accepted'
-    adr: 'specs/adr/0002-github-releases-api-state-machine.md'
-  - id: 'DEC-003'
-    topic: 'Netlify static hosting with big-release automation'
-    status: 'accepted'
-    adr: 'specs/adr/0003-static-hosting-and-ci-cd.md'
-  - id: 'DEC-004'
-    topic: 'Vitest unit tests + Playwright E2E smoke tests'
-    status: 'accepted'
-    adr: 'specs/adr/0004-testing-strategy-vitest-playwright.md'
-  - id: 'DEC-005'
-    topic: 'Grill-me architectural stress-test resolutions'
-    status: 'accepted'
-    adr: 'specs/adr/0005-grill-me-stress-test-audit.md'
+  story_start: '2026-11-06T12:30:00Z'
+  bcp_baseline: 14
