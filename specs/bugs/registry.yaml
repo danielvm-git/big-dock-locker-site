@@ -66,9 +66,11 @@ bugs:
     title: 'Site exceeds the "under 1 second" vision criterion — 117 KB gzip JS, 4.1 MB favicon'
     severity: high
     scope: perf
-    status: open
+    status: fixed
     file: specs/bugs/BUG-007-perf-budget-and-sentry-critical-path.md
     found: '2026-11-06'
+    fixed: '2026-11-06'
+    evidence: 'Critical-path JS 113.54 → 30.34 KB gzip (-73%), page weight 4,340 → 411 KiB, TBT 2,470 → 40 ms, CLS 0.24 → 0.017, Lighthouse 44 → 95 (local preview). Budget gate wired into preflight; 94/94 unit + 4/4 e2e green.'
     issue: 13
     type: gap
     priority: 1

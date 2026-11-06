@@ -1,6 +1,6 @@
 ---
 bug_id: BUG-007
-status: open
+status: fixed
 severity: high
 scope: perf
 title: Site exceeds the "under 1 second" vision criterion — 117 KB gzip JS on the critical path
