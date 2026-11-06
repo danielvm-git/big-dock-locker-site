@@ -45,16 +45,21 @@ If a trigger fires, the migration must preserve, and prove it preserves:
   `pre-push` guard (BUG-001);
 - `postTagAssets: [VERSION, CHANGELOG.md]`, so `CHANGELOG.md` keeps shipping
   with the release (BUG-005);
-- the post-deploy live-site smoke gate (BUG-008), which the templates do not
-  provide.
+- the post-deploy live-site smoke gate (BUG-008 / issue #14), which the
+  templates do not provide.
 
 ## Consequences
 
 - No migration risk and no new external dependency for a pipeline that is green
   and purpose-fit.
 - The deploy half of the split pair is not adopted, because Netlify already
-  owns deployment. Post-deploy verification is provided instead by
-  `.github/workflows/deploy-smoke.yml` (BUG-008), which tests the deployed
-  artifact and therefore covers the gap the templates would not.
+  owns deployment. Post-deploy verification is provided instead by the
+  live-site smoke check specified in `BUG-008` / issue #14, which tests the
+  deployed artifact and therefore covers the gap the templates would not. That
+  gate is **not landed yet**: issue #14 is blocked on BUG-012, because Netlify's
+  git integration for this repository has no webhook and has not deployed since
+  2026-05-21. The decision recorded here is unaffected — no trigger fired — but
+  the migration must not be reconsidered as a workaround for a broken deploy:
+  the templates deploy to BigBase, and this site stays on Netlify.
 - Issue #16 is closed with this decision so the option is documented rather than
   re-litigated.
