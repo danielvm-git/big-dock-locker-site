@@ -6,8 +6,8 @@ workflow_mode: 'solo-git'
 
 bug_cycle:
   bug_id: 'BUG-001'
-  current_step: 5
-  completed_steps: [1, 2, 3, 4]
+  current_step: 4
+  completed_steps: [1, 2, 3]
 
 project_cycle:
   current_phase: 4
@@ -17,8 +17,8 @@ project_cycle:
 epic_cycle: null
 
 handoff:
-  last_step_completed: 'validate-fix'
-  next_skill: 'release-branch'
+  last_step_completed: 'develop-tdd'
+  next_skill: 'validate-fix'
   open_decisions: []
   required_reading:
     - 'specs/release-plan.yaml'

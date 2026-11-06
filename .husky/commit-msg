@@ -1,18 +1,23 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Conventional commit check & AI attribution block
+#
+# husky's `.husky/_/h` shim runs every hook with `sh -e`, and on Debian/Ubuntu
+# that `sh` is dash. `dash -n` accepts the double-bracket test (it parses as a
+# command name) but fails at runtime with "not found", which silently turns
+# every `if` guard into a false branch. Keep this file POSIX (BUG-001).
 
 COMMIT_MSG_FILE="$1"
 FIRST_LINE=$(head -n 1 "$COMMIT_MSG_FILE")
 
 # Allow merge commits or release commits
-if [[ "$FIRST_LINE" =~ ^Merge || "$FIRST_LINE" =~ ^v[0-9] ]]; then
-  exit 0
-fi
+case "$FIRST_LINE" in
+  Merge* | v[0-9]*) exit 0 ;;
+esac
 
 # Conventional commit pattern
-CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_-]+\))?!?: .+$"
+CONVENTIONAL_PATTERN='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_-]+\))?!?: .+$'
 
-if ! [[ "$FIRST_LINE" =~ $CONVENTIONAL_PATTERN ]]; then
+if ! printf '%s\n' "$FIRST_LINE" | grep -Eq "$CONVENTIONAL_PATTERN"; then
   echo "ERROR: Commit message does not follow Conventional Commits format."
   echo "Format: <type>(<scope>): <subject> OR <type>: <subject>"
   echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
