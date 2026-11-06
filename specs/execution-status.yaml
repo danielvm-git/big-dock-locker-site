@@ -15,11 +15,12 @@ stories:
     started_at: '2026-11-06T12:30:00-03:00'
     completed_at: '2026-11-06T12:34:00-03:00'
   e01s02:
-    status: 'in-progress'
+    status: 'done'
     epic: 'e01'
     title: 'Global CSS Tokens and Navbar Component'
     bcp: 3
     started_at: '2026-11-06T12:35:00-03:00'
+    completed_at: '2026-11-06T12:36:00-03:00'
   e02s01:
     status: 'pending'
     epic: 'e02'

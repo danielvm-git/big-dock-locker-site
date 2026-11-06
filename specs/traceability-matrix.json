@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T15:22:25.200098+00:00",
+  "generated_at": "2026-11-06T15:36:59.090259+00:00",
   "matrix_version": "1.0",
   "stories": [
     {
@@ -11,6 +11,12 @@
       "wsjf": 8.0,
       "status": "backlog",
       "links": [
+        {
+          "file": "specs/verifications/AUDIT-e01-e01s01.md",
+          "line": 10,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
         {
           "file": "specs/epics/e01-site-foundation/e01s01-static-assets.md",
           "line": 1,
@@ -42,7 +48,7 @@
           "method": "task_reference"
         }
       ],
-      "link_count": 5
+      "link_count": 6
     },
     {
       "id": "e01s02",
@@ -53,6 +59,12 @@
       "wsjf": 8.0,
       "status": "backlog",
       "links": [
+        {
+          "file": "specs/verifications/AUDIT-e01-e01s02.md",
+          "line": 10,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
         {
           "file": "specs/epics/e01-site-foundation/e01s02-site-layout-navbar.md",
           "line": 1,
@@ -90,7 +102,7 @@
           "method": "task_reference"
         }
       ],
-      "link_count": 6
+      "link_count": 7
     },
     {
       "id": "e02s01",
@@ -372,7 +384,7 @@
     "stale_tags": [],
     "stale_count": 0,
     "oracle_stats": {
-      "high": 22,
+      "high": 24,
       "medium": 7,
       "low": 11
     }
