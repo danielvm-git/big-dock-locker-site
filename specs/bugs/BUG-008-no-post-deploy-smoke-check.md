@@ -25,6 +25,19 @@ Evidence at intake: the live site served `index-COMqoqnk.js` while a build of
 `release.yml` (tagging). Netlify's deploy result never re-enters CI, and no job
 asserts anything about the published artifact.
 
+## Blocker (verified 2026-11-08)
+
+This gate cannot land while **BUG-012** is open. The Netlify GitHub App
+installation for the site is deauthorised (`installation_id: null`), so no
+production deploy is produced at all and the live site still serves the
+2026-05-21 build. Landing `deploy-smoke.yml` today would turn `main` red on
+every run, and guarding it to pass when no deploy exists would be a weakened
+gate — both are forbidden by CONVENTIONS.md. Ordering is: repair the deploy path
+(BUG-012, owner action), then land this gate.
+
+See `specs/bugs/BUG-012-netlify-deploy-dead.md` for the full RCA and the three
+remediation options.
+
 ## Fix approach
 
 1. `scripts/smoke-live.mjs` — Playwright-driven checker against a **live URL**

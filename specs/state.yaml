@@ -14,10 +14,25 @@ epic_cycle: null
 # ── Issue sweep (2026-11-06): every open issue on the tracker ───────────────
 # Resume from this block + specs/bugs/registry.yaml after any context loss.
 bug_cycle:
-  current_step: 3
+  current_step: 5
   completed_steps: [1, 2]
+  stopped_at: 'Bug 5 (release-branch) — no fix authorised; BUG-012 blocked on owner credentials'
   batch: 'D'
   order: [13, 14, 15, 16]
+  run: 'build-and-ship-2026-11-08'
+  items:
+    'BUG-012':
+      bug: BUG-012
+      status: stopped-external
+      worktree: null
+      branch: 'docs/bug-012-deploy-rca-baseline'
+      blocked_gate: 'fix-bug Step 2/3 — external failure requiring owner credentials'
+      decision: 'DEC-BUG012-STOP'
+      verify: 'netlify api listSiteDeploys | published_deploy.commit_ref == origin/main'
+    'BUG-008':
+      bug: BUG-008
+      status: blocked
+      blocked_by: BUG-012
   issues:
     '13':
       bug: BUG-007
@@ -80,20 +95,46 @@ baseline:
   page_weight_kib: 4340
   note: 'Preflight green at intake — no red baseline to fix first.'
 
+# Baseline for the Build&Ship run started 2026-11-08 (SCOPE = all pending work).
+build_and_ship_baseline:
+  recorded_at: '2026-11-08T19:39:20Z'
+  commit: '5137c43'
+  branch: 'main'
+  tree: clean
+  preflight: green
+  typecheck: green
+  unit_tests: '94 passed / 94 (10 files)'
+  e2e_tests: '4 passed / 4'
+  prettier: green
+  build: 'green, 354 modules'
+  bundle_js_gzip_kb: 30.34
+  bundle_css_gzip_kb: 2.65
+  bundle_budget: '60 KB JS / 10 KB CSS — OK, 29.66 KB headroom'
+  trace_stories_strict: 'exit 0'
+  validate_specs_yaml: 'OK'
+  ci_on_main: 'CI 42276130949 green, Release 42276130880 green'
+  open_prs: 0
+  open_issues: 1 (#14 = BUG-008, blocked by BUG-012)
+  active_registry_entries: 1 (BUG-012 open; BUG-008 blocked by it)
+  worktrees: '1 (repo root only)'
+  stale_branches: 0
+  note: 'Nothing red at intake. All remaining pending work reduces to BUG-012, which is external.'
+
 handoff:
-  last_step_completed: 'issue sweep complete: A, C, D shipped; B blocked (BUG-012); review pass landed (PR #20)'
+  last_step_completed: 'Build&Ship 2026-11-08: baseline recorded green; BUG-012 RCA verified; stopped on owner-credential stop condition'
   next_skill: 'fix-bug'
-  next_item: 'BUG-012 (blocks issue #14) — restore the Netlify deploy path, then land the post-deploy smoke gate from specs/bugs/BUG-008'
+  next_item: 'BUG-012 — owner re-links the Netlify GitHub App for site f6e1acd7 (Build & deploy → Link repository); then land BUG-008 deploy-smoke gate; then re-measure live Lighthouse for BUG-007'
   open_decisions:
     - 'BUG-012: restore the Netlify deploy path (owner action) before #14 can land'
   required_reading:
     - 'specs/release-plan.yaml'
     - 'specs/execution-status.yaml'
     - 'specs/bugs/registry.yaml'
-  resume_note: 'Resume from specs/bugs/registry.yaml + specs/state.yaml bug_cycle. Next forward work after the sweep: land BUG-008 once BUG-012 is fixed, then re-measure live Lighthouse for BUG-007.'
+    - 'specs/bugs/BUG-012-netlify-deploy-dead.md'
+  resume_note: 'Phases 2-5 had no in-approval work: nothing was red, and the only pending item (BUG-012) needs production-infrastructure or secret changes the run approval excludes. Resume after the owner re-links Netlify.'
 
 git:
-  branch: 'main'
+  branch: 'docs/bug-012-deploy-rca-baseline'
   clean: true
 
 metrics:
@@ -195,4 +236,24 @@ decisions:
     gate: 'issue sweep — approval boundary'
     topic: 'Did not create a Netlify build hook or a repo secret to unblock #14'
     reason: 'Wiring the deploy back up is production infrastructure (Netlify GitHub App re-authorisation, a build hook, or a NETLIFY_AUTH_TOKEN secret). Creating credentials and re-enabling production deploys is outside the granted approval (commit/push/PR/merge/comment). Escalated on issue #14 with three concrete options instead.'
+    status: 'accepted'
+  - id: 'DEC-BSN-BASELINE'
+    gate: 'Build&Ship Phase 1 — triage / kickoff baseline'
+    topic: 'Baseline recorded green; no triage fixes needed'
+    reason: 'main @ 5137c43, tree clean, 0 uncommitted changes. Preflight green (typecheck, 94/94 unit in 10 files, prettier, build 354 modules, check:bundle 30.34 KB JS / 2.65 KB CSS within the 60/10 KB budget), 4/4 Playwright e2e green, trace-stories --strict exit 0, validate-specs-yaml OK, CI 42276130949 + Release 42276130880 green, 0 open PRs, 0 stale branches, 1 worktree. No WIP commit was required.'
+    status: 'accepted'
+  - id: 'DEC-BSN-SCOPE-EXHAUSTED'
+    gate: 'Build&Ship Phase 1 — work-item enumeration'
+    topic: 'All pending work reduces to BUG-012; no other work item exists'
+    reason: 'No failing test exists to work on. specs/bugs/registry.yaml has exactly one active entry (BUG-012, open) plus BUG-008, which is blocked by it; BUG-002..BUG-007 and BUG-009..BUG-013 are fixed. The single open tracker issue (#14) is BUG-008. No TODO/FIXME markers of substance in src, scripts, tests or .github. scripts/smoke-live.mjs is absent, confirming BUG-008 never landed. Phases 2-5 therefore have no in-approval candidate.'
+    status: 'accepted'
+  - id: 'DEC-BUG012-STOP'
+    gate: 'fix-bug Step 2 HARD GATE (verified root cause) → Phase 2 stop condition'
+    topic: 'Stopped BUG-012 without taking infra action — external failure needing owner credentials'
+    reason: 'RCA verified read-only 2026-11-08: getSite shows build_settings.repo_url set and stop_builds=false but installation_id=null and deploy_key_id=null, so the Netlify GitHub App installation is deauthorised; listHooksBySiteId has no build hook; repo hooks are Snyk only. 77 commits on main since the last deploy (77d72ae, 2026-05-21) produced no builds, and the live site still serves assets/index-COMqoqnk.js while main builds assets/index-86qctmDw.js. Every remediation (re-link the GitHub App via interactive OAuth, create a build hook plus a repo secret, or add NETLIFY_AUTH_TOKEN and a CI deploy) mutates production infrastructure or creates a secret, which the run approval (commit/push/PR/merge/remove merged worktrees) does not cover. This is the stated stop condition "a failure is external ... or needs my credentials". Per the Never clause, BUG-008 was not weakened into an always-passing gate to work around it.'
+    status: 'accepted'
+  - id: 'DEC-BUG012-EVIDENCE-PR'
+    gate: 'release-branch Gate'
+    topic: 'Recorded the verified RCA and baseline in docs, not code'
+    reason: 'The bug file, registry entry, BUG-008 blocker note and this state file are the only changes the run can legally make. Landed via branch docs/bug-012-deploy-rca-baseline so main moves only through green checks; no gate, test or workflow was touched, so the change is documentation-only and cannot turn a gate green that was red.'
     status: 'accepted'
