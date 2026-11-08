@@ -152,18 +152,22 @@ bugs:
       - scripts/validate-specs-yaml.sh
     evidence: 'Same archive-fallback class as BUG-006: `bash scripts/validate-specs-yaml.sh` exited 1 on main with "release-plan: missing epic file specs/epics/e01-…/epic.yaml" for all three archived epics. Now resolves specs/epics/archive/<capsule>/epic.yaml and exits 0 ("validate-specs-yaml: OK").'
   - id: BUG-012
-    title: 'Netlify never deploys — no webhook and no build hook, live site frozen since 2026-05-21'
+    title: 'Netlify never deploys — GitHub App installation revoked, no webhook and no build hook, live site frozen since 2026-05-21'
     severity: critical
     scope: infra
     status: open
-    file: specs/bugs/BUG-008-no-post-deploy-smoke-check.md
+    file: specs/bugs/BUG-012-netlify-deploy-dead.md
     found: '2026-11-06'
     issue: 14
+    rca_verified: '2026-11-08'
+    root_cause: 'The Netlify GitHub App installation for site f6e1acd7 is deauthorised (getSite.installation_id=null, deploy_key_id=null) while build_settings.repo_url still holds a stale repo string. Netlify therefore receives no push webhooks and holds no clone credentials, so it never starts a build.'
     blocked_action: 'owner must re-link the Netlify GitHub integration (site settings → Build & deploy → Link repository), or authorise a CI deploy (NETLIFY_AUTH_TOKEN secret + netlify deploy --prod), or install a build hook + secret'
+    blocked_gate: 'Build&Ship Phase 2 stop condition — external failure requiring owner credentials; every fix option mutates production infrastructure or creates a repo secret, which is outside the run approval (commit/push/PR/merge/worktree cleanup)'
+    decision: 'DEC-BUG012-STOP'
     affected:
       - netlify.toml
       - .github/workflows/ (no deploy job)
-    evidence: 'listSiteDeploys: 5 deploys, newest 2026-05-21T18:40Z @ 77d72ae. Repo hooks: Snyk only. getSite: installation_id=null, deploy_key_id=null. listHooksBySiteId: email hooks only, no build hook. After PR #17 merged, the live site still served index-COMqoqnk.js and the 4.1 MB icon.png.'
+    evidence: 'Re-verified 2026-11-08. listSiteDeploys: 5 deploys, all on 2026-05-21, newest 6a0f5187… 2026-05-21T18:40:07Z @ 77d72ae. Repo hooks: Snyk only. getSite: build_settings.repo_url set, stop_builds=false, installation_id=null, deploy_key_id=null. listHooksBySiteId: email/form hooks only, no build hook. git log 77d72ae..main = 77 commits with no deploy. Live index serves assets/index-COMqoqnk.js; local build of main emits assets/index-86qctmDw.js.'
   - id: BUG-013
     title: 'Python bytecode committed to git — 28 .pyc files tracked, __pycache__ not ignored'
     severity: low
