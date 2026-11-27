@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- big-release managed -->
 
+## [1.6.6] - 2026-11-27
+
+### Bug Fixes
+
+- **ci:** pin the Pages deploy to the shared workflow's merge commit ([#24](https://github.com/danielvm-git/big-dock-locker-site/issues/24)) ([0dc09fa](https://github.com/danielvm-git/big-dock-locker-site/commit/0dc09fa9ca1cb4f66c586e220e9c2dc918913822))
+
 ## [1.6.5] - 2026-11-06
 
 ### Bug Fixes
